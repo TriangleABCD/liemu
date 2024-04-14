@@ -9,6 +9,8 @@ using u16 = uint16_t;
 using u32 = uint32_t;
 using u64 = uint64_t;
 
+using Inst = u32;
+
 #define MAGIC 0x0000abde
 #define START_ADDR 0x80000000
 #endif

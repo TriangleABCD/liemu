@@ -22,25 +22,25 @@ struct Memory {
   }
 
   u32 read_pmem(u32 addr) {
-    assert(addr >= 0 && addr < MAX_MEM_IDX);
-    return this->mem[addr];
+    assert(addr >= 0 && addr < MEM_SIZE);
+    return this->mem[addr >> 2];
   }
 
   void write_pmem(u32 addr, u32 data) {
-    assert(addr >= 0 && addr < MAX_MEM_IDX);
-    this->mem[addr] = data; 
+    assert(addr >= 0 && addr < MEM_SIZE);
+    this->mem[addr >> 2] = data; 
   }
   
   u32 read_vmem(u32 vaddr) {
     u32 paddr = vaddr - START_ADDR;
-    assert(paddr >= 0 && paddr < MAX_MEM_IDX);
-    return this->mem[paddr];
+    assert(paddr >= 0 && paddr < MEM_SIZE);
+    return this->mem[paddr >> 2];
   }
 
   void write_vmem(u32 vaddr, u32 data) {
     u32 paddr = vaddr - START_ADDR;
-    assert(paddr >= 0 && paddr < MAX_MEM_IDX);
-    this->mem[paddr] = data; 
+    assert(paddr >= 0 && paddr < MEM_SIZE);
+    this->mem[paddr >> 2] = data; 
   }
 };
 
