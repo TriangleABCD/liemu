@@ -29,17 +29,6 @@ struct Machine {
 
   void execute() {
     while (1) {
-      std::cout << "(liemu) ";
-      std::string cmd;
-      std::cin >> cmd;
-      if ("q" == cmd || "quit" == cmd || "exit" == cmd) {
-        std::cout << "liemu quited\n";
-        return;
-      }
-      if ("si" != cmd) {
-        fprintf(stderr, "wrong command\n");
-        return;
-      }
       int r = execute_one_step();
       if (1 == r) {
         break;
