@@ -3,6 +3,6 @@
 Machine m;
 
 int main(int argc, char* argv[]) {
-  m.info_reg();
+  m.cpu.info_reg(std::string(argv[1]));
   return 0;
 }
