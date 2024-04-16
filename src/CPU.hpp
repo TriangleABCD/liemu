@@ -43,7 +43,12 @@ struct CPU {
       return;
     }
     if ("" != reg) {
-      printf("%s:\t0x%08x\n", reg.c_str(), this->gp_regs[this->reg2idx(reg)]);
+      int idx = this->reg2idx(reg);
+      if (idx == -1) {
+        fprintf(stderr, "wrong reg name\n");
+        return;
+      }
+      printf("%s:\t0x%08x\n", reg.c_str(), this->gp_regs[idx]);
       return;
     }
     for (int i = 0; i < 32; i++) {
