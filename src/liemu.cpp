@@ -116,17 +116,7 @@ std::vector<std::string> split(std::string str) {
 
 int main(int argc, char* argv[]) {
   
-  u32 insts[] = {
-    0x00028737,
-    0x00c75713,
-    0x000027b7,
-    0x00c7d793,
-    0x00e787b3
-  };
-  
-  for (int i = 0; i < int(sizeof(insts) / sizeof(u32)); i++) {
-    m.mem.write_vmem(START_ADDR + 4*i, insts[i]);
-  }
+  m.mem.load_insts_into_mem("insts.txt");
 
   char* input;
   using_history();

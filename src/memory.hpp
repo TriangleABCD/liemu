@@ -3,6 +3,9 @@
 #define MEMORY_H
 
 #include <assert.h>
+#include <string>
+#include <fstream>
+#include <vector>
 
 #include "liemu.hpp"
 
@@ -41,6 +44,25 @@ struct Memory {
     u32 paddr = vaddr - START_ADDR;
     assert(paddr >= 0 && paddr < MEM_SIZE);
     this->mem[paddr >> 2] = data; 
+  }
+
+  void load_insts_into_mem(std::string path) {
+    std::fstream file(path);
+    if (!file.is_open()) {
+      fprintf(stderr, "failed to open file: %s\n", path.c_str());
+      return;
+    }
+    std::string line;
+    std::vector<u32> insts;
+    while(file >> line) {
+      u32 inst = strtol(line.c_str(), NULL, 16);
+      insts.push_back(inst);
+    }
+    u32 addr = START_ADDR;
+    for (const auto& inst : insts) {
+      this->write_vmem(addr, inst);
+      addr += 4;
+    }
   }
 };
 
