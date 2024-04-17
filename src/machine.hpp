@@ -2,27 +2,17 @@
 #ifndef MACHINE_H
 #define MACHINE_H
 
-#include <iostream>
-
 #include "CPU.hpp"
 #include "memory.hpp"
+#include "inst.hpp"
 
 struct Machine {
   CPU cpu;
   Memory mem;
-  
-  int doit(Inst inst) {
-    if (inst == MAGIC) {
-      printf("finish\n");
-      return 1;
-    }
-    printf("inst = 0x%08x\n", inst);
-    return 0;
-  }
 
   int execute_one_step() {
     Inst inst = this->mem.read_vmem(cpu.pc);
-    int r = this->doit(inst);
+    int r = parse_inst(inst);
     this->cpu.pc += 4;
     return r != 0;
   }

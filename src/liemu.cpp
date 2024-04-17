@@ -39,7 +39,7 @@ int cmd_help(const std::vector<std::string>& cmd) {
 }
 
 int cmd_quit(const std::vector<std::string>& cmd) {
-  printf("liemu quited.\n");
+  printf("quit liemu.\n");
   return 1;
 }
 
