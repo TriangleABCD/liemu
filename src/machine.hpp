@@ -12,8 +12,11 @@ struct Machine {
 
   int execute_one_step() {
     Inst inst = this->mem.read_vmem(cpu.pc);
-    int r = parse_inst(inst);
+    int r = parse_inst(*this, inst);
     this->cpu.pc += 4;
+    if (-1 == r) {
+      return r;
+    }
     return r != 0;
   }
 
