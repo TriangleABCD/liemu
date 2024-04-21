@@ -17,30 +17,39 @@ struct Command {
 
 int cmd_help(const std::vector<std::string>& cmd);
 int cmd_quit(const std::vector<std::string>& cmd);
+int cmd_clear(const std::vector<std::string>& cmd);
 int cmd_continue(const std::vector<std::string>& cmd);
 int cmd_si(const std::vector<std::string>& cmd);
 int cmd_info(const std::vector<std::string>& cmd);
 int cmd_x(const std::vector<std::string>& cmd);
+int cmd_ls(const std::vector<std::string>& cmd);
 
 std::vector<Command> cmds {
   { "help", "show help info", cmd_help },
   { "q", "quit liemu", cmd_quit },
+  { "clear", "clear the screen", cmd_clear },
   { "c", "continue execute rest of insts", cmd_continue },
   { "si", "go N steps", cmd_si },
   { "info", "print reg value", cmd_info },
   { "x", "print mem value", cmd_x },
+  { "ls", "list instructions", cmd_ls },
 };
 
 int cmd_help(const std::vector<std::string>& cmd) {
   for (auto& c : cmds) {
-    printf("%s:\t%s\n", c.cmd_name.c_str(), c.descr.c_str());
+    printf("\033[32m%s\033[0m:\t%s\n", c.cmd_name.c_str(), c.descr.c_str());
   }
   return 0;
 }
 
 int cmd_quit(const std::vector<std::string>& cmd) {
-  printf("quit liemu.\n");
+  printf("\033[32mquit liemu.\n");
   return 1;
+}
+
+int cmd_clear(const std::vector<std::string>& cmd) {
+  printf("\033[2J\033[H");
+  return 0;
 }
 
 int cmd_continue(const std::vector<std::string>& cmd) {
@@ -97,7 +106,32 @@ int cmd_x(const std::vector<std::string>& cmd) {
       (word >> 16) & 0xff,
       (word >> 24) & 0xff
     };
-    printf("0x%08x:\t0x%02x\t0x%02x\t0x%02x\t0x%02x\n", addr+i*4, bytes[3], bytes[2], bytes[1], bytes[0]);
+    printf("\033[32m0x%08x\033[0m:\t0x%02x\t0x%02x\t0x%02x\t0x%02x\n", addr+i*4, bytes[3], bytes[2], bytes[1], bytes[0]);
+  }
+  return 0;
+}
+
+int cmd_ls(const std::vector<std::string>& cmd) {
+  u32 pc = m.cpu.pc;
+  u32 beg = pc - 5 * sizeof(Inst);
+  if (beg < 0x80000000) {
+    beg = 0x80000000;
+  }
+  for (int i = 0; ; i++) {
+    u32 cur = beg + i * sizeof(Inst);
+    if (cur > pc && cur - pc > 5 * sizeof(Inst)) {
+      break;
+    }
+    Inst inst = m.mem.read_vmem(cur);
+    if (inst == MAGIC) {
+      break;
+    }
+    if (cur == pc) {
+      printf("\033[32m->\033[0m%d\t", i+1);
+    } else {
+      printf("  %d\t", i+1);
+    }
+    printf("0x%08x\n", inst);
   }
   return 0;
 }
@@ -121,7 +155,8 @@ int main(int argc, char* argv[]) {
   char* input;
   using_history();
   while (1) {
-    input = readline("(liemu)");
+    printf("\033[0m");
+    input = readline("\033[32m(liemu)\033[0m");
     add_history(input);
     std::vector<std::string> cmd_words = split(std::string(input));
     free(input);
@@ -133,11 +168,11 @@ int main(int argc, char* argv[]) {
       }
     }
     if (-1 == r) {
-      fprintf(stderr, "wrong command\n");
+      fprintf(stderr, "\033[31mwrong command\n");
     } else if (1 == r) {
       break;
     }
   }
-
+  printf("\033[0m");
   return 0;
 }

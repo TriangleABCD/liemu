@@ -39,23 +39,23 @@ struct CPU {
 
   void info_reg(std::string reg = "") {
     if ("pc" == reg) {
-      printf("%s:\t0x%08x\n", reg.c_str(), this->pc);
+      printf("\033[32m%s\033[0m:\t0x%08x\n", reg.c_str(), this->pc);
       return;
     }
     if ("" != reg) {
       int idx = this->reg2idx(reg);
       if (idx == -1) {
-        fprintf(stderr, "wrong reg name\n");
+        fprintf(stderr, "\033[31mwrong reg name\n");
         return;
       }
-      printf("%s:\t0x%08x\n", reg.c_str(), this->gp_regs[idx]);
+      printf("\033[32m%s\033[0m:\t0x%08x\n", reg.c_str(), this->gp_regs[idx]);
       return;
     }
     for (int i = 0; i < 32; i++) {
       auto& name = this->reg_names[i];
-      printf("%s:\t0x%08x\n", name.c_str(), this->gp_regs[i]);
+      printf("\033[32m%s\033[0m:\t0x%08x\n", name.c_str(), this->gp_regs[i]);
     }
-    printf("pc:\t0x%08x\n", this->pc);
+    printf("\033[32mpc\033[0m:\t0x%08x\n", this->pc);
   }
 
 };

@@ -15,6 +15,7 @@ struct Machine {
     int r = parse_inst(inst);
     this->cpu.pc += 4;
     if (-1 == r) {
+      fprintf(stderr, "\033[31mexec error\n");
       return r;
     }
     return r != 0;
@@ -27,7 +28,6 @@ struct Machine {
         break;
       } 
       if (-1 == r) {
-        fprintf(stderr, "exec error\n");
         break;
       }
     }
