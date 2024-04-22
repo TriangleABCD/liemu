@@ -42,7 +42,6 @@ int cmd_help(const std::vector<std::string>& cmd) {
 }
 
 int cmd_quit(const std::vector<std::string>& cmd) {
-  printf("\033[32mquit liemu.\033[0m\n");
   return 1;
 }
 
@@ -145,6 +144,8 @@ int main(int argc, char* argv[]) {
   
   m.mem.load_insts_into_mem("insts.txt");
 
+  m.cpu.gp_regs[1] = START_ADDR-4;
+
   char* input;
   using_history();
   while (1) {
@@ -165,5 +166,6 @@ int main(int argc, char* argv[]) {
       break;
     }
   }
+  printf("\033[32mquit liemu.\033[0m\n");
   return 0;
 }
