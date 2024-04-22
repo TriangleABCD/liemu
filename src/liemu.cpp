@@ -1,6 +1,5 @@
 #include <cstdio>
 #include <cstdlib>
-#include <sstream>
 #include <functional>
 #include <readline/readline.h>
 #include <readline/history.h>
@@ -43,7 +42,7 @@ int cmd_help(const std::vector<std::string>& cmd) {
 }
 
 int cmd_quit(const std::vector<std::string>& cmd) {
-  printf("\033[32mquit liemu.\n");
+  printf("\033[32mquit liemu.\033[0m\n");
   return 1;
 }
 
@@ -53,8 +52,8 @@ int cmd_clear(const std::vector<std::string>& cmd) {
 }
 
 int cmd_continue(const std::vector<std::string>& cmd) {
-  m.execute();
-  return 0;
+  int r = m.execute();
+  return r;
 }
 
 int cmd_si(const std::vector<std::string>& cmd) {
@@ -66,11 +65,14 @@ int cmd_si(const std::vector<std::string>& cmd) {
       return -1;
     }
   }
-
+  int r = 0;
   for (int i = 0; i < n; i++) {
-    m.execute_one_step();
+    r = m.execute_one_step();
+    if (-1 == r || 1 == r) {
+      break;
+    }
   }
-  return 0;
+  return r;
 }
 
 int cmd_info(const std::vector<std::string>& cmd) {
@@ -113,6 +115,9 @@ int cmd_x(const std::vector<std::string>& cmd) {
 
 int cmd_ls(const std::vector<std::string>& cmd) {
   u32 pc = m.cpu.pc;
+  if (m.mem.read_vmem(pc) == MAGIC) {
+    return 0;
+  }
   u32 beg = pc - 5 * sizeof(Inst);
   if (beg < 0x80000000) {
     beg = 0x80000000;
@@ -136,18 +141,6 @@ int cmd_ls(const std::vector<std::string>& cmd) {
   return 0;
 }
 
-std::vector<std::string> split(std::string str) {
-  std::vector<std::string> words;
-  std::istringstream ss(str);
-
-  std::string word;
-  while (ss >> word) {
-    words.push_back(word);
-  }
-
-  return words;
-}
-
 int main(int argc, char* argv[]) {
   
   m.mem.load_insts_into_mem("insts.txt");
@@ -155,24 +148,22 @@ int main(int argc, char* argv[]) {
   char* input;
   using_history();
   while (1) {
-    printf("\033[0m");
     input = readline("\033[32m(liemu)\033[0m");
     add_history(input);
     std::vector<std::string> cmd_words = split(std::string(input));
     free(input);
-    int r = -1;
+    int r = -2;
     for (auto& c : cmds) {
       if (cmd_words[0] == c.cmd_name) {
         r = c.handle_func(cmd_words);
         break;
       }
     }
-    if (-1 == r) {
-      fprintf(stderr, "\033[31mwrong command\n");
+    if (-2 == r) {
+      fprintf(stderr, "\033[31mwrong command\033[0m\n");
     } else if (1 == r) {
       break;
     }
   }
-  printf("\033[0m");
   return 0;
 }

@@ -45,7 +45,7 @@ struct CPU {
     if ("" != reg) {
       int idx = this->reg2idx(reg);
       if (idx == -1) {
-        fprintf(stderr, "\033[31mwrong reg name\n");
+        fprintf(stderr, "\033[31mwrong reg name\033[0m\n");
         return;
       }
       printf("\033[32m%s\033[0m:\t0x%08x\n", reg.c_str(), this->gp_regs[idx]);

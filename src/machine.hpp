@@ -15,22 +15,21 @@ struct Machine {
     int r = parse_inst(inst);
     this->cpu.pc += 4;
     if (-1 == r) {
-      fprintf(stderr, "\033[31mexec error\n");
+      fprintf(stderr, "\033[31mexec error\033[0m\n");
       return r;
     }
     return r != 0;
   }
 
-  void execute() {
+  int execute() {
+    int r = 0;
     while (1) {
-      int r = execute_one_step();
-      if (1 == r) {
-        break;
-      } 
-      if (-1 == r) {
+      r = execute_one_step();
+      if (-1 == r || 1 == r) {
         break;
       }
     }
+    return r;
   }
 };
 
