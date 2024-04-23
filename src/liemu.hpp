@@ -22,6 +22,14 @@ using Inst = u32;
 #define MAGIC 0x0000abde
 #define START_ADDR 0x80000000
 
+#define KB 1024
+#define MB 1024*KB
+#define MEM_SIZE 64*MB
+#define MAX_MEM_IDX MEM_SIZE/4
+
+#define STACK_BTM START_ADDR+MEM_SIZE-4*KB
+#define STACK_TOP START_ADDR+MEM_SIZE-12*KB
+
 inline std::vector<std::string> split(std::string str) {
   std::vector<std::string> words;
   std::istringstream ss(str);

@@ -27,6 +27,7 @@ struct CPU {
       this->gp_regs[i] = MAGIC;
     }
     this->pc = START_ADDR;
+    this->gp_regs[this->reg2idx("sp")] = STACK_BTM;
   }
   
   int reg2idx(std::string reg_name) {

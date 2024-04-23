@@ -39,27 +39,117 @@ struct Machine {
       case 0x03: {
         int funct3 = (inst >> 12) & 0x7;
         switch(funct3) {
-          case 0b000:
-            printf("lb\n");
-            break;
-          case 0b001:
-            printf("lh\n");
-            break;
-          case 0b010: {
-            printf("lw\n");
+          case 0b000: {
+            printf("lb ");
             u8 rd = (inst >> 7) & 0x1f;
+            printf("%s, ", cpu.reg_names[rd].c_str());
             u8 rs1 = (inst >> 15) & 0x1f;
-            u16 imm = ((i32)inst >> 20);
-            u32 addr = this->cpu.gp_regs[rs1] + imm;
+            i16 imm = ((i32)inst >> 20);
+            printf("0x%x(%s)\n", (i16)imm, cpu.reg_names[rs1].c_str());
+            u32 addr = (i32)this->cpu.gp_regs[rs1] + imm;
+            u8 op = addr % 4;
+            if (0 == op) {
+              i8 hw = this->mem.read_vmem(addr);
+              this->mem.write_vmem(addr, i32(hw));
+            } else if (2 == op) {
+              i8 hw = this->mem.read_vmem(addr) >> 16;
+              this->mem.write_vmem(addr, i32(hw));
+            } else if (1 == op) {
+              i8 hw = this->mem.read_vmem(addr) >> 8;
+              this->mem.write_vmem(addr, i32(hw));
+            } else {
+              i8 hw = this->mem.read_vmem(addr) >> 24;
+              this->mem.write_vmem(addr, i32(hw));
+            }
+            break;
+          }
+          case 0b001: {
+            printf("lh ");
+            u8 rd = (inst >> 7) & 0x1f;
+            printf("%s, ", cpu.reg_names[rd].c_str());
+            u8 rs1 = (inst >> 15) & 0x1f;
+            i16 imm = ((i32)inst >> 20);
+            printf("0x%x(%s)\n", (i16)imm, cpu.reg_names[rs1].c_str());
+            u32 addr = (i32)this->cpu.gp_regs[rs1] + imm;
+            u8 op = addr % 4;
+            if (0 == op) {
+              i16 hw = this->mem.read_vmem(addr);
+              this->mem.write_vmem(addr, i32(hw));
+            } else if (2 == op) {
+              i16 hw = this->mem.read_vmem(addr) >> 16;
+              this->mem.write_vmem(addr, i32(hw));
+            } else if (1 == op) {
+              i16 hw = this->mem.read_vmem(addr) >> 8;
+              this->mem.write_vmem(addr, i32(hw));
+            } else {
+              i8 hw1 = this->mem.read_vmem(addr) >> 24;
+              i8 hw2 = this->mem.read_vmem(addr+1);
+              i16 hw = (hw2 << 8) | hw1;
+              this->mem.write_vmem(addr, i32(hw));
+            }
+            break;
+          }
+          case 0b010: {
+            printf("lw ");
+            u8 rd = (inst >> 7) & 0x1f;
+            printf("%s, ", cpu.reg_names[rd].c_str());
+            u8 rs1 = (inst >> 15) & 0x1f;
+            i16 imm = ((i32)inst >> 20);
+            printf("%d(%s)\n", (i16)imm, cpu.reg_names[rs1].c_str());
+            u32 addr = (i32)this->cpu.gp_regs[rs1] + imm;
             this->cpu.gp_regs[rd] = this->mem.read_vmem(addr);
             break;
           }
-          case 0b100:
+          case 0b100: {
             printf("lbu\n");
+            u8 rd = (inst >> 7) & 0x1f;
+            printf("%s, ", cpu.reg_names[rd].c_str());
+            u8 rs1 = (inst >> 15) & 0x1f;
+            i16 imm = ((i32)inst >> 20);
+            printf("0x%x(%s)\n", (i16)imm, cpu.reg_names[rs1].c_str());
+            u32 addr = (i32)this->cpu.gp_regs[rs1] + imm;
+            u8 op = addr % 4;
+            if (0 == op) {
+              u8 hw = this->mem.read_vmem(addr);
+              this->mem.write_vmem(addr, u32(hw));
+            } else if (2 == op) {
+              u8 hw = this->mem.read_vmem(addr) >> 16;
+              this->mem.write_vmem(addr, u32(hw));
+            } else if (1 == op) {
+              u8 hw = this->mem.read_vmem(addr) >> 8;
+              this->mem.write_vmem(addr, u32(hw));
+            } else {
+              u8 hw = this->mem.read_vmem(addr) >> 24;
+              this->mem.write_vmem(addr, u32(hw));
+            }
             break;
-          case 0b101:
+          }
+          case 0b101: {
             printf("lhu\n");
+            u8 rd = (inst >> 7) & 0x1f;
+            printf("%s, ", cpu.reg_names[rd].c_str());
+            u8 rs1 = (inst >> 15) & 0x1f;
+            i16 imm = ((i32)inst >> 20);
+            printf("0x%x(%s)\n", (i16)imm, cpu.reg_names[rs1].c_str());
+            u32 addr = (i32)this->cpu.gp_regs[rs1] + imm;
+            u8 op = addr % 4;
+            if (0 == op) {
+              u16 hw = this->mem.read_vmem(addr);
+              this->mem.write_vmem(addr, u32(hw));
+            } else if (2 == op) {
+              u16 hw = this->mem.read_vmem(addr) >> 16;
+              this->mem.write_vmem(addr, u32(hw));
+            } else if (1 == op) {
+              u16 hw = this->mem.read_vmem(addr) >> 8;
+              this->mem.write_vmem(addr, u32(hw));
+            } else {
+              u8 hw1 = this->mem.read_vmem(addr) >> 24;
+              u8 hw2 = this->mem.read_vmem(addr+1);
+              u16 hw = (hw2 << 8) | hw1;
+              this->mem.write_vmem(addr, u32(hw));
+            }
             break;
+          }
           default:
             return -1;
         }
@@ -69,10 +159,10 @@ struct Machine {
         int funct3 = (inst >> 12) & 0x7;
         switch(funct3) {
           case 0b000:
-            printf("fense\n");
+            printf("(skip)fense\n");
             break;
           case 0b001:
-            printf("fense.i\n");
+            printf("(skip)fense.i\n");
             break;
           default:
             return -1;
@@ -93,38 +183,115 @@ struct Machine {
             this->cpu.gp_regs[rd] = this->cpu.gp_regs[rs1] + imm;
             break;
           }
-          case 0b010:
-            printf("slti\n");
+          case 0b010: {
+            printf("slti ");
+            u8 rd = (inst >> 7) & 0x1f;
+            printf("%s, ", cpu.reg_names[rd].c_str());
+            u8 rs1 = (inst >> 15) & 0x1f;
+            printf("%s, ", cpu.reg_names[rs1].c_str());
+            i16 imm = ((i32)inst >> 20);
+            printf("%d\n", imm);
+            i32 val = this->cpu.gp_regs[rs1];
+            if (val < imm) {
+              this->cpu.gp_regs[rd] = 1;
+            } else {
+              this->cpu.gp_regs[rd] = 0;
+            }
             break;
-          case 0b011:
-            printf("sltiu\n");
+          }
+          case 0b011: {
+            printf("sltiu ");
+            u8 rd = (inst >> 7) & 0x1f;
+            printf("%s, ", cpu.reg_names[rd].c_str());
+            u8 rs1 = (inst >> 15) & 0x1f;
+            printf("%s, ", cpu.reg_names[rs1].c_str());
+            u16 imm = (inst >> 20);
+            printf("%d\n", imm);
+            u32 val = this->cpu.gp_regs[rs1];
+            if (val < imm) {
+              this->cpu.gp_regs[rd] = 1;
+            } else {
+              this->cpu.gp_regs[rd] = 0;
+            }
             break;
-          case 0b100:
-            printf("xori\n");
+          }
+          case 0b100: {
+            printf("xori ");
+            u8 rd = (inst >> 7) & 0x1f;
+            printf("%s, ", cpu.reg_names[rd].c_str());
+            u8 rs1 = (inst >> 15) & 0x1f;
+            printf("%s, ", cpu.reg_names[rs1].c_str());
+            i16 imm = ((i32)inst >> 20);
+            printf("%d\n", imm);
+            this->cpu.gp_regs[rd] = this->cpu.gp_regs[rs1] ^ imm;
             break;
-          case 0b110:
-            printf("ori\n");
+          }
+          case 0b110: {
+            printf("ori ");
+            u8 rd = (inst >> 7) & 0x1f;
+            printf("%s, ", cpu.reg_names[rd].c_str());
+            u8 rs1 = (inst >> 15) & 0x1f;
+            printf("%s, ", cpu.reg_names[rs1].c_str());
+            i16 imm = ((i32)inst >> 20);
+            printf("%d\n", imm);
+            this->cpu.gp_regs[rd] = this->cpu.gp_regs[rs1] | imm;
             break;
-          case 0b111:
-            printf("andi\n");
+          }
+          case 0b111: {
+            printf("andi ");
+            u8 rd = (inst >> 7) & 0x1f;
+            printf("%s, ", cpu.reg_names[rd].c_str());
+            u8 rs1 = (inst >> 15) & 0x1f;
+            printf("%s, ", cpu.reg_names[rs1].c_str());
+            i16 imm = ((i32)inst >> 20);
+            printf("%d\n", imm);
+            this->cpu.gp_regs[rd] = this->cpu.gp_regs[rs1] & imm;
             break;
-          case 0b001:
-            printf("slli\n");
+          }
+          case 0b001: {
+            printf("slli ");
+            u8 rd = (inst >> 7) & 0x1f;
+            printf("%s, ", cpu.reg_names[rd].c_str());
+            u8 rs1 = (inst >> 15) & 0x1f;
+            printf("%s, ", cpu.reg_names[rs1].c_str());
+            u8 shamt = (inst >> 20) & 0x1f;
+            printf("%d\n", shamt);
+            this->cpu.gp_regs[rd] = this->cpu.gp_regs[rs1] << shamt;
             break;
+          }
           case 0b101:
             int op = (inst >> 31);
             if (op) {
-              printf("srai\n");
+              printf("srai ");
+              u8 rd = (inst >> 7) & 0x1f;
+              printf("%s, ", cpu.reg_names[rd].c_str());
+              u8 rs1 = (inst >> 15) & 0x1f;
+              printf("%s, ", cpu.reg_names[rs1].c_str());
+              u8 shamt = (inst >> 20) & 0x1f;
+              printf("%d\n", shamt);
+              this->cpu.gp_regs[rd] = (i32)this->cpu.gp_regs[rs1] >> shamt;
             } else {
-              printf("srli\n");
+              printf("srli ");
+              u8 rd = (inst >> 7) & 0x1f;
+              printf("%s, ", cpu.reg_names[rd].c_str());
+              u8 rs1 = (inst >> 15) & 0x1f;
+              printf("%s, ", cpu.reg_names[rs1].c_str());
+              u8 shamt = (inst >> 20) & 0x1f;
+              printf("%d\n", shamt);
+              this->cpu.gp_regs[rd] = this->cpu.gp_regs[rs1] >> shamt;
             }
             break;
         }
         break;
       }
-      case 0x17:
-        printf("auipc\n");
+      case 0x17: {
+        printf("auipc");
+        u8 rd = (inst >> 7) & 0x1f;
+        u32 imm = (inst >> 12) << 12;
+        printf(" %s, 0x%x\n", cpu.reg_names[rd].c_str(), imm);
+        this->cpu.gp_regs[rd] = this->cpu.pc + imm;
         break;
+      }
       case 0x23: {
         int funct3 = (inst >> 12) & 0x7;
         switch(funct3) {

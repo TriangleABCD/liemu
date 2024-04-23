@@ -9,12 +9,6 @@
 
 #include "liemu.hpp"
 
-#define KB 1024
-#define MB 1024*KB
-#define MEM_SIZE 64*MB
-#define MAX_MEM_IDX MEM_SIZE/4
-
-
 struct Memory {
   u32 mem[MAX_MEM_IDX];
 
