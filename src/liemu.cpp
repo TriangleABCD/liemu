@@ -117,25 +117,26 @@ int cmd_ls(const std::vector<std::string>& cmd) {
   if (m.mem.read_vmem(pc) == MAGIC) {
     return 0;
   }
-  u32 beg = pc - 5 * sizeof(Inst);
+  u32 beg = pc - 5 * sizeof(u32);
   if (beg < 0x80000000) {
     beg = 0x80000000;
   }
   for (int i = 0; ; i++) {
-    u32 cur = beg + i * sizeof(Inst);
-    if (cur > pc && cur - pc > 5 * sizeof(Inst)) {
+    u32 cur = beg + i * sizeof(u32);
+    if (cur > pc && cur - pc > 5 * sizeof(u32)) {
       break;
     }
-    Inst inst = m.mem.read_vmem(cur);
+    u32 inst = m.mem.read_vmem(cur);
     if (inst == MAGIC) {
       break;
     }
     if (cur == pc) {
-      printf("\033[32m->\033[0m%d\t", i+1);
+      printf("\033[32m>\033[0m%d\t", i+1);
     } else {
-      printf("  %d\t", i+1);
+      printf(" %d\t", i+1);
     }
-    printf("0x%08x\n", inst);
+    printf("0x%08x\t", inst);
+    printf("%s\n", m.getInst[cur].name.c_str());
   }
   return 0;
 }
@@ -143,7 +144,7 @@ int cmd_ls(const std::vector<std::string>& cmd) {
 int main(int argc, char* argv[]) {
   
   m.mem.load_insts_into_mem("insts.txt");
-
+  m.read_insts();
   m.cpu.gp_regs[1] = START_ADDR-4;
 
   char* input;

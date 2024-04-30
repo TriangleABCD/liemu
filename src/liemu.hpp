@@ -17,8 +17,6 @@ using i16 = int16_t;
 using i32 = int32_t;
 using i64 = int64_t;
 
-using Inst = u32;
-
 #define MAGIC 0x0000abde
 #define START_ADDR 0x80000000
 
