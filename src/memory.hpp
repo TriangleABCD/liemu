@@ -5,9 +5,8 @@
 #include <assert.h>
 #include <string>
 #include <fstream>
-#include <vector>
 
-#include "liemu.hpp"
+#include "common.hpp"
 
 struct Memory {
   u32 mem[MAX_MEM_IDX];

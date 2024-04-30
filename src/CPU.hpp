@@ -8,7 +8,7 @@
 #include <cstdio>
 #include <algorithm>
 
-#include "liemu.hpp"
+#include "common.hpp"
 
 struct CPU {
   u32 gp_regs[32];

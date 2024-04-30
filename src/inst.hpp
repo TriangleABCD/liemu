@@ -3,10 +3,9 @@
 #define INST_HPP 
 
 #include <string>
-#include <vector>
 #include <functional>
 
-#include "liemu.hpp"
+#include "common.hpp"
 #include "CPU.hpp"
 #include "memory.hpp"
 
