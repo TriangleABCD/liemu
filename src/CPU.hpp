@@ -21,8 +21,28 @@ struct CPU {
     "s8", "s9", "s10", "s11", "t3", "t4", "t5", "t6"
   };
 
-  CPU() {
+  void write_reg(std::string reg, u32 val) {
+    int idx = this->reg2idx(reg);
+    if (idx == -1) {
+      fprintf(stderr, "\033[31mwrong reg name\033[0m\n");
+      return;
+    }
+    this->gp_regs[idx] = val;
     this->gp_regs[0] = 0;
+  }
+
+  void write_reg(int idx, u32 val) {
+    if (idx < 0 || idx >= 32) {
+      fprintf(stderr, "\033[31mwrong reg idx\033[0m\n");
+      return;
+    }
+    this->gp_regs[idx] = val;
+    this->gp_regs[0] = 0;
+  }
+
+
+  CPU() {
+    this->write_reg("$0", 0);
     for (int i = 1; i < 32; i++) {
       this->gp_regs[i] = MAGIC;
     }

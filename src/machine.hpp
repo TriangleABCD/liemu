@@ -35,6 +35,10 @@ struct Machine {
       return 1;
     }
     Inst inst = this->getInst[this->cpu.pc];
+    if (inst.result == -1) {
+      fprintf(stderr, "\033[32mfinish\033[0m\n");
+      return -1;
+    }
     int r = inst.doit(inst, this->cpu, this->mem);
     this->cpu.pc += 4;
     if (-1 == r) {
