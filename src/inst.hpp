@@ -343,7 +343,7 @@ inline Inst parse_inst(u32 inst, CPU& cpu, Memory& mem) {
     case 0x23: {
       u8 rs1 = (inst >> 15) & 0x1f; 
       u8 rs2 = (inst >> 20) & 0x1f;
-      i16 offset = (((i32)inst >> 25) <<  5) | ((inst >> 7) & 0x1f);
+      i16 offset = (((i32)inst >> 25) <<  5) | (((i32)inst >> 7) & 0x1f);
 
       res.rs1 = rs1;
       res.rs2 = rs2;
@@ -591,10 +591,10 @@ inline Inst parse_inst(u32 inst, CPU& cpu, Memory& mem) {
       u8 rs1 = (inst >> 15) & 0x1f;
       u8 rs2 = (inst >> 20) & 0x1f;
 
-      i32 offset = ((inst >> 31) << 11) 
-                |  (((inst >> 7) & 1) << 10)
-                |  (((inst >> 25) & 0x3f) << 4)
-                |  ((inst >> 8) & 0xf);
+      i32 offset = (((i32)inst >> 31) << 11) 
+                |  ((((i32)inst >> 7) & 1) << 10)
+                |  ((((i32)inst >> 25) & 0x3f) << 4)
+                |  (((i32)inst >> 8) & 0xf);
       offset = offset << 1;
 
       res.rs1 = rs1;
@@ -724,10 +724,10 @@ inline Inst parse_inst(u32 inst, CPU& cpu, Memory& mem) {
     }
     case 0x6f: {
       u8 rd = (inst >> 7) & 0x1f;
-      i32 offset = ((inst >> 31) << 19) 
-                |  (((inst >> 12) & 0xff) << 11)
-                |  (((inst >> 20) & 1) << 10)
-                |  ((inst >> 21) & 0x3ff);
+      i32 offset = (((i32)inst >> 31) << 19) 
+                |  ((((i32)inst >> 12) & 0xff) << 11)
+                |  ((((i32)inst >> 20) & 1) << 10)
+                |  (((i32)inst >> 21) & 0x3ff);
       offset = offset << 1;
       res.rd = rd;
       res.offset = offset;
