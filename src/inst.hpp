@@ -430,115 +430,355 @@ inline Inst parse_inst(u32 inst, CPU& cpu, Memory& mem) {
       break;
     }
     case 0x33: {
+      u8 rd = (inst >> 7) & 0x1f;
+      u8 rs1 = (inst >> 15) & 0x1f;
+      u8 rs2 = (inst >> 20) & 0x1f;
+
+      res.rd = rd;
+      res.rs1 = rs1;
+      res.rs2 = rs2;
+
       int funct3 = (inst >> 12) & 0x7;
       switch(funct3) {
         case 0b000: {
           int op = (inst >> 31);
           if (op) {
-            printf("sub\n");
+            res.name = "sub ";
+            res.name += cpu.reg_names[rd];
+            res.name += ", " + cpu.reg_names[rs1] + ", " + cpu.reg_names[rs2];
+
+            res.doit = [](const Inst& inst, CPU& cpu, Memory& mem) {
+              cpu.gp_regs[inst.rd] = cpu.gp_regs[inst.rs1] - cpu.gp_regs[inst.rs2];
+              return 0;
+            };
           } else {
-            printf("add\n");
+            res.name = "add ";
+            res.name += cpu.reg_names[rd];
+            res.name += ", " + cpu.reg_names[rs1] + ", " + cpu.reg_names[rs2];
+
+            res.doit = [](const Inst& inst, CPU& cpu, Memory& mem) {
+              cpu.gp_regs[inst.rd] = cpu.gp_regs[inst.rs1] + cpu.gp_regs[inst.rs2];
+              return 0;
+            };
           }
           break;
         }
-        case 0b001:
-          printf("sll\n");
+        case 0b001: {
+          res.name = "sll ";
+          res.name += cpu.reg_names[rd];
+          res.name += ", " + cpu.reg_names[rs1] + ", " + cpu.reg_names[rs2];
+
+          res.doit = [](const Inst& inst, CPU& cpu, Memory& mem) {
+            cpu.gp_regs[inst.rd] = cpu.gp_regs[inst.rs1] << (cpu.gp_regs[inst.rs2] & 0x1f);
+            return 0;
+          };
           break;
-        case 0b010:
-          printf("slt\n");
+        }
+        case 0b010: {
+          res.name = "slt ";
+          res.name += cpu.reg_names[rd];
+          res.name += ", " + cpu.reg_names[rs1] + ", " + cpu.reg_names[rs2];
+
+          res.doit = [](const Inst& inst, CPU& cpu, Memory& mem) {
+            i32 val1 = cpu.gp_regs[inst.rs1];
+            i32 val2 = cpu.gp_regs[inst.rs2];
+            if (val1 < val2) {
+              cpu.gp_regs[inst.rd] = 1;
+            } else {
+              cpu.gp_regs[inst.rd] = 0;
+            }
+            return 0;
+          };
           break;
-        case 0b011:
-          printf("sltu\n");
+        }
+        case 0b011: {
+          res.name = "sltu ";
+          res.name += cpu.reg_names[rd];
+          res.name += ", " + cpu.reg_names[rs1] + ", " + cpu.reg_names[rs2];
+
+          res.doit = [](const Inst& inst, CPU& cpu, Memory& mem) {
+            u32 val1 = cpu.gp_regs[inst.rs1];
+            u32 val2 = cpu.gp_regs[inst.rs2];
+            if (val1 < val2) {
+              cpu.gp_regs[inst.rd] = 1;
+            } else {
+              cpu.gp_regs[inst.rd] = 0;
+            }
+            return 0;
+          };
           break;
-        case 0b100:
-          printf("xor\n");
+        }
+        case 0b100: {
+          res.name = "xor ";
+          res.name += cpu.reg_names[rd];
+          res.name += ", " + cpu.reg_names[rs1] + ", " + cpu.reg_names[rs2];
+
+          res.doit = [](const Inst& inst, CPU& cpu, Memory& mem) {
+            cpu.gp_regs[inst.rd] = cpu.gp_regs[inst.rs1] ^ cpu.gp_regs[inst.rs2];
+            return 0;
+          };
           break;
+        }
         case 0b101: {
           int op = (inst >> 31);
           if (op) {
-            printf("sra\n");
+            res.name = "sra ";
+            res.name += cpu.reg_names[rd];
+            res.name += ", " + cpu.reg_names[rs1] + ", " + cpu.reg_names[rs2];
+
+            res.doit = [](const Inst& inst, CPU& cpu, Memory& mem) {
+              cpu.gp_regs[inst.rd] = cpu.gp_regs[inst.rs1] >> (cpu.gp_regs[inst.rs2] & 0x1f);
+              return 0;
+            };
           } else {
-            printf("srl\n");
+            res.name = "srl ";
+            res.name += cpu.reg_names[rd];
+            res.name += ", " + cpu.reg_names[rs1] + ", " + cpu.reg_names[rs2];
+
+            res.doit = [](const Inst& inst, CPU& cpu, Memory& mem) {
+              cpu.gp_regs[inst.rd] = (u32)cpu.gp_regs[inst.rs1] >> (cpu.gp_regs[inst.rs2] & 0x1f);
+              return 0;
+            };
           }
           break;
         }
-        case 0b110:
-          printf("or\n");
+        case 0b110: {
+          res.name = "or ";
+          res.name += cpu.reg_names[rd];
+          res.name += ", " + cpu.reg_names[rs1] + ", " + cpu.reg_names[rs2];
+
+          res.doit = [](const Inst& inst, CPU& cpu, Memory& mem) {
+            cpu.gp_regs[inst.rd] = cpu.gp_regs[inst.rs1] | cpu.gp_regs[inst.rs2];
+            return 0;
+          };
           break;
-        case 0b111:
-          printf("and\n");
+        }
+        case 0b111: {
+          res.name = "and ";
+          res.name += cpu.reg_names[rd];
+          res.name += ", " + cpu.reg_names[rs1] + ", " + cpu.reg_names[rs2];
+
+          res.doit = [](const Inst& inst, CPU& cpu, Memory& mem) {
+            cpu.gp_regs[inst.rd] = cpu.gp_regs[inst.rs1] & cpu.gp_regs[inst.rs2];
+            return 0;
+          };
           break;
+        }
         default:
           res.result = -1;
           return res;
       }
       break;
     }
-    case 0x37:
-      printf("lui\n");
+    case 0x37: {
+      u8 rd = (inst >> 7) & 0x1f;
+      i32 imm = ((i32)inst >> 12) << 12;
+
+      res.rd = rd;
+      res.imm = imm;
+
+      res.name = "lui ";
+      res.name += cpu.reg_names[rd];
+      sprintf(buf, ", 0x%x", imm);
+      res.name += std::string(buf);
+
+      res.doit = [](const Inst& inst, CPU& cpu, Memory& mem) {
+        cpu.gp_regs[inst.rd] = inst.imm;
+        return 0;
+      };
       break;
+    }
     case 0x63: {
+      u8 rs1 = (inst >> 15) & 0x1f;
+      u8 rs2 = (inst >> 20) & 0x1f;
+
+      i32 offset = ((inst >> 31) << 11) 
+                |  (((inst >> 7) & 1) << 10)
+                |  (((inst >> 25) & 0x3f) << 4)
+                |  ((inst >> 8) & 0xf);
+
+      res.rs1 = rs1;
+      res.rs2 = rs2;
+      res.offset = offset;
+
       int funct3 = (inst >> 12) & 0x7;
       switch(funct3) {
-        case 0b000:
-          printf("beq\n");
+        case 0b000: {
+          res.name = "beq ";
+          res.name += cpu.reg_names[rs1];
+          res.name += ", " + cpu.reg_names[rs2];
+          sprintf(buf, ", 0x%x", offset);
+          res.name += std::string(buf);
+
+          res.doit = [](const Inst& inst, CPU& cpu, Memory& mem) {
+            if (cpu.gp_regs[inst.rs1] == cpu.gp_regs[inst.rs2]) {
+              cpu.pc += inst.offset;
+            }
+            return 0;
+          };
           break;
-        case 0b001:
-          printf("bne\n");
+        }
+        case 0b001: {
+          res.name = "bne ";
+          res.name += cpu.reg_names[rs1];
+          res.name += ", " + cpu.reg_names[rs2];
+          sprintf(buf, ", 0x%x", offset);
+          res.name += std::string(buf);
+
+          res.doit = [](const Inst& inst, CPU& cpu, Memory& mem) {
+            if (cpu.gp_regs[inst.rs1] != cpu.gp_regs[inst.rs2]) {
+              cpu.pc += inst.offset;
+            }
+            return 0;
+          };
           break;
-        case 0b100:
-          printf("blt\n");
+        }
+        case 0b100: {
+          res.name = "blt ";
+          res.name += cpu.reg_names[rs1];
+          res.name += ", " + cpu.reg_names[rs2];
+          sprintf(buf, ", 0x%x", offset);
+          res.name += std::string(buf);
+
+          res.doit = [](const Inst& inst, CPU& cpu, Memory& mem) {
+            if ((i32)cpu.gp_regs[inst.rs1] < (i32)cpu.gp_regs[inst.rs2]) {
+              cpu.pc += inst.offset;
+            }
+            return 0;
+          };
           break;
-        case 0b101:
-          printf("bge\n");
+        }
+        case 0b101: {
+          res.name = "bge ";
+          res.name += cpu.reg_names[rs1];
+          res.name += ", " + cpu.reg_names[rs2];
+          sprintf(buf, ", 0x%x", offset);
+          res.name += std::string(buf);
+
+          res.doit = [](const Inst& inst, CPU& cpu, Memory& mem) {
+            if ((i32)cpu.gp_regs[inst.rs1] >= (i32)cpu.gp_regs[inst.rs2]) {
+              cpu.pc += inst.offset;
+            }
+            return 0;
+          };
           break;
-        case 0b110:
-          printf("bltu\n");
+        }
+        case 0b110: {
+          res.name = "bltu ";
+          res.name += cpu.reg_names[rs1];
+          res.name += ", " + cpu.reg_names[rs2];
+          sprintf(buf, ", 0x%x", offset);
+          res.name += std::string(buf);
+
+          res.doit = [](const Inst& inst, CPU& cpu, Memory& mem) {
+            if ((u32)cpu.gp_regs[inst.rs1] < (u32)cpu.gp_regs[inst.rs2]) {
+              cpu.pc += inst.offset;
+            }
+            return 0;
+          };
           break;
-        case 0b111:
-          printf("bgeu\n");
+        }
+        case 0b111: {
+          res.name = "bgeu ";
+          res.name += cpu.reg_names[rs1];
+          res.name += ", " + cpu.reg_names[rs2];
+          sprintf(buf, ", 0x%x", offset);
+          res.name += std::string(buf);
+
+          res.doit = [](const Inst& inst, CPU& cpu, Memory& mem) {
+            if ((u32)cpu.gp_regs[inst.rs1] >= (u32)cpu.gp_regs[inst.rs2]) {
+              cpu.pc += inst.offset;
+            }
+            return 0;
+          };
           break;
+        }
         default:
           res.result = -1;
           return res;
       }
       break;
     }
-    case 0x67:
-      printf("jalr\n");
+    case 0x67: {
+      u8 rd = (inst >> 7) & 0x1f;
+      if (rd == 0) {
+        rd = 1;
+      }
+      u8 rs1 = (inst >> 15) & 0x1f;
+      i16 offset = ((i32)inst >> 20);
+
+      res.rd = rd;
+      res.rs1 = rs1;
+      res.offset = offset;
+
+      res.name = "jalr ";
+      res.name += cpu.reg_names[rd];
+      sprintf(buf, ", %d(%s)", offset, cpu.reg_names[rs1].c_str());
+      res.name += std::string(buf);
+
+      res.doit = [](const Inst& inst, CPU& cpu, Memory& mem) {
+        u32 tmp = cpu.pc + 4;
+        cpu.pc = ((i32)cpu.gp_regs[inst.rs1] + inst.offset) & 0xfffffffe;
+        cpu.gp_regs[inst.rd] = tmp;
+        return 0;
+      };
+
       break;
-    case 0x6f:
-      printf("jal\n");
+    }
+    case 0x6f: {
+      u8 rd = (inst >> 7) & 0x1f;
+      if (rd == 0) {
+        rd = 1;
+      }
+      i32 offset = ((inst >> 31) << 19) 
+                |  (((inst >> 12) & 0xff) << 11)
+                |  (((inst >> 20) & 1) << 10)
+                |  ((inst >> 21) & 0x3ff);
+      res.rd = rd;
+      res.offset = offset;
+
+      res.name = "jal ";
+      res.name += cpu.reg_names[rd];
+      sprintf(buf, ", 0x%x", offset);
+      res.name += std::string(buf);
+
+      res.doit = [](const Inst& inst, CPU& cpu, Memory& mem) {
+        cpu.gp_regs[inst.rd] = cpu.pc + 4;
+        cpu.pc += inst.offset;
+        return 0;
+      };
+
       break;
+    }
     case 0x73: {
       int funct3 = (inst >> 12) & 0x7;
       switch(funct3) {
         case 0b000: {
           int op = (inst >> 20);
           if (op) {
-            printf("ebreak\n");
+            res.name = "ebreak (skip)";
           } else {
-            printf("ecall\n");
+            res.name = "ecall(todo)";
           }
           break;
         }
         case 0b001:
-          printf("csrrw");
+          res.name = "csrrw (skip)";
           break;
         case 0b010:
-          printf("csrrs");
+          res.name = "csrrs (skip)";
           break;
         case 0b011:
-          printf("csrrc");
+          res.name = "csrrc (skip)";
           break;
         case 0b101:
-          printf("csrrwi");
+          res.name = "csrrwi (skip)";
           break;
         case 0b110:
-          printf("csrrsi");
+          res.name = "csrrsi (skip)";
           break;
         case 0b111:
-          printf("csrrci");
+          res.name = "csrrci (skip)";
           break;
       }
       break;

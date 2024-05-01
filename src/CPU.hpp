@@ -28,6 +28,7 @@ struct CPU {
     }
     this->pc = START_ADDR;
     this->gp_regs[this->reg2idx("sp")] = STACK_BTM;
+    this->gp_regs[this->reg2idx("ra")] = START_ADDR - 4;
   }
   
   int reg2idx(std::string reg_name) {

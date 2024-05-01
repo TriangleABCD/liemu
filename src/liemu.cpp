@@ -130,13 +130,18 @@ int cmd_ls(const std::vector<std::string>& cmd) {
     if (inst == MAGIC) {
       break;
     }
+    int line = (cur - 0x80000000) / sizeof(u32);
     if (cur == pc) {
-      printf("\033[32m>\033[0m%d\t", i+1);
+      printf("\033[32m>%d\t", line+1);
+      printf("0x%08x\t", cur);
+      printf("%08x\t", inst);
+      printf("%s\033[0m\n", m.getInst[cur].name.c_str());
     } else {
-      printf(" %d\t", i+1);
+      printf(" %d\t", line+1);
+      printf("0x%08x\t", cur);
+      printf("%08x\t", inst);
+      printf("%s\n", m.getInst[cur].name.c_str());
     }
-    printf("0x%08x\t", inst);
-    printf("%s\n", m.getInst[cur].name.c_str());
   }
   return 0;
 }
@@ -145,7 +150,6 @@ int main(int argc, char* argv[]) {
   
   m.mem.load_insts_into_mem("insts.txt");
   m.read_insts();
-  m.cpu.gp_regs[1] = START_ADDR-4;
 
   char* input;
   using_history();
