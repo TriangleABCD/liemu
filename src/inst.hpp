@@ -3,6 +3,7 @@
 #define INST_HPP 
 
 #include <string>
+#include <vector>
 #include <functional>
 
 #include "common.hpp"
@@ -17,6 +18,20 @@ struct Inst {
   u8 rd, rs1, rs2, shamt;
   i16 offset;
   i32 imm;
+};
+
+struct Syscall {
+  int num;
+  std::string name;
+  std::function<int(CPU& cpu, Memory& mem)> doit;
+};
+
+inline std::vector<Syscall> syscalls {
+  { 1, "sys_print_reg", [](CPU& cpu, Memory& mem) -> int {
+    int val = cpu.gp_regs[cpu.reg2idx("a0")];
+    printf("%d\n", val);
+    return 0;
+  } },
 };
 
 inline Inst parse_inst(u32 inst, CPU& cpu, Memory& mem) {
@@ -753,7 +768,18 @@ inline Inst parse_inst(u32 inst, CPU& cpu, Memory& mem) {
           if (op) {
             res.name = "ebreak (skip)";
           } else {
-            res.name = "ecall(todo)";
+            res.name = "ecall";
+            res.doit = [](const Inst& inst, CPU& cpu, Memory& mem) {
+              u8 syscall_num = cpu.gp_regs[cpu.reg2idx("a7")];
+              int r = -1;
+              for (auto& syscall : syscalls) {
+                if (syscall.num == syscall_num) {
+                  r = syscall.doit(cpu, mem);
+                  break;
+                }
+              }
+              return r;
+            };
           }
           break;
         }

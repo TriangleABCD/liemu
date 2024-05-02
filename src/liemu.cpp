@@ -151,7 +151,7 @@ int main(int argc, char* argv[]) {
   m.mem.load_insts_into_mem("insts.txt");
   m.read_insts();
 
-  m.cpu.write_reg("ra", START_ADDR + 0x24);
+  m.cpu.write_reg("ra", START_ADDR + 0x30);
 
   char* input;
   using_history();
