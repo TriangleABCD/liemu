@@ -22,6 +22,8 @@ int cmd_si(const std::vector<std::string>& cmd);
 int cmd_info(const std::vector<std::string>& cmd);
 int cmd_x(const std::vector<std::string>& cmd);
 int cmd_ls(const std::vector<std::string>& cmd);
+int cmd_w(const std::vector<std::string>& cmd);
+int cmd_d(const std::vector<std::string>& cmd);
 
 std::vector<Command> cmds {
   { "help", "show help info", cmd_help },
@@ -29,9 +31,11 @@ std::vector<Command> cmds {
   { "clear", "clear the screen", cmd_clear },
   { "c", "continue execute rest of insts", cmd_continue },
   { "si", "go N steps", cmd_si },
-  { "info", "print reg value", cmd_info },
+  { "info", "show reg/watchpoint value", cmd_info },
   { "x", "print mem value", cmd_x },
   { "ls", "list instructions", cmd_ls },
+  { "w", "add a watch point", cmd_w },
+  { "d", "delete a watch point", cmd_d },
 };
 
 int cmd_help(const std::vector<std::string>& cmd) {
@@ -78,8 +82,13 @@ int cmd_info(const std::vector<std::string>& cmd) {
   if (cmd.size() == 1) {
     return -1;
   }
-  if (cmd.size() == 2 && cmd[1] != "reg") {
+  if (cmd.size() == 2 && cmd[1] != "r" && cmd[1] != "w") {
     return -1;
+  }
+
+  if (cmd[1] == "w") {
+    m.watchList.info_watchpoint(m.cpu, m.mem);
+    return 0;
   }
   
   if (cmd.size() == 2) {
@@ -146,6 +155,23 @@ int cmd_ls(const std::vector<std::string>& cmd) {
   return 0;
 }
 
+int cmd_w(const std::vector<std::string>& cmd) {
+  if (cmd.size() != 3) {
+    return -1;
+  }
+  m.watchList.add_watchpoint(m.cpu, m.mem, cmd[1], cmd[2]);
+  return 0;
+}
+
+int cmd_d(const std::vector<std::string>& cmd) {
+  if (cmd.size() != 2) {
+    return -1;
+  }
+  int id = atoi(cmd[1].c_str());
+  m.watchList.del_watchpoint(id);
+  return 0; 
+}
+
 int main(int argc, char* argv[]) {
   
   m.mem.load_insts_into_mem("insts.txt");
@@ -160,6 +186,7 @@ int main(int argc, char* argv[]) {
     add_history(input);
     std::vector<std::string> cmd_words = split(std::string(input));
     free(input);
+    m.watchList.update_watchpoint(m.cpu, m.mem);
     int r = -2;
     for (auto& c : cmds) {
       if (cmd_words[0] == c.cmd_name) {
