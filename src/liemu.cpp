@@ -7,6 +7,7 @@
 #include "machine.hpp"
 
 Machine m;
+bool auto_ls = false;
 
 struct Command {
   std::string cmd_name;
@@ -24,6 +25,7 @@ int cmd_x(const std::vector<std::string>& cmd);
 int cmd_ls(const std::vector<std::string>& cmd);
 int cmd_w(const std::vector<std::string>& cmd);
 int cmd_d(const std::vector<std::string>& cmd);
+int do_ls();
 
 std::vector<Command> cmds {
   { "help", "show help info", cmd_help },
@@ -75,6 +77,10 @@ int cmd_si(const std::vector<std::string>& cmd) {
       break;
     }
   }
+  if (auto_ls) {
+    cmd_clear({});
+    do_ls();
+  }
   return r;
 }
 
@@ -122,6 +128,12 @@ int cmd_x(const std::vector<std::string>& cmd) {
 }
 
 int cmd_ls(const std::vector<std::string>& cmd) {
+  auto_ls = !auto_ls;
+  cmd_clear({});
+  do_ls();
+  return 0;
+}
+int do_ls() {
   u32 pc = m.cpu.pc;
   if (m.mem.read_vmem(pc) == MAGIC) {
     return 0;
@@ -130,6 +142,7 @@ int cmd_ls(const std::vector<std::string>& cmd) {
   if (beg < 0x80000000) {
     beg = 0x80000000;
   }
+  printf("\033[32m##############################################################\033[0m\n");
   for (int i = 0; ; i++) {
     u32 cur = beg + i * sizeof(u32);
     if (cur > pc && cur - pc > 5 * sizeof(u32)) {
@@ -152,6 +165,7 @@ int cmd_ls(const std::vector<std::string>& cmd) {
       printf("%s\n", m.getInst[cur].name.c_str());
     }
   }
+  printf("\033[32m##############################################################\033[0m\n");
   return 0;
 }
 
@@ -182,11 +196,11 @@ int main(int argc, char* argv[]) {
   char* input;
   using_history();
   while (1) {
+    m.watchList.update_watchpoint(m.cpu, m.mem);
     input = readline("\033[32m(liemu)\033[0m");
     add_history(input);
     std::vector<std::string> cmd_words = split(std::string(input));
     free(input);
-    m.watchList.update_watchpoint(m.cpu, m.mem);
     int r = -2;
     for (auto& c : cmds) {
       if (cmd_words[0] == c.cmd_name) {
