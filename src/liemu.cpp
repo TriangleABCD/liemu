@@ -78,7 +78,6 @@ int cmd_si(const std::vector<std::string>& cmd) {
     }
   }
   if (auto_ls) {
-    cmd_clear({});
     do_ls();
   }
   return r;
@@ -129,7 +128,6 @@ int cmd_x(const std::vector<std::string>& cmd) {
 
 int cmd_ls(const std::vector<std::string>& cmd) {
   auto_ls = !auto_ls;
-  cmd_clear({});
   do_ls();
   return 0;
 }
@@ -195,6 +193,9 @@ int main(int argc, char* argv[]) {
 
   char* input;
   using_history();
+  
+  cmd_clear({});
+
   while (1) {
     m.watchList.update_watchpoint(m.cpu, m.mem);
     input = readline("\033[32m(liemu)\033[0m");
