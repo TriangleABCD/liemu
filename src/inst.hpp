@@ -32,6 +32,28 @@ inline std::vector<Syscall> syscalls {
     printf("%d\n", val);
     return 0;
   } },
+  { 2, "sys_print_str", [](CPU& cpu, Memory& mem) -> int {
+    u32 addr = cpu.gp_regs[cpu.reg2idx("a0")];
+    bool end = false;
+    while (!end) {
+      u32 word = mem.read_vmem(addr);
+      u8 bytes[] {
+        (u8)((word >> 0) & 0xff),
+        (u8)((word >> 8) & 0xff),
+        (u8)((word >> 16) & 0xff),
+        (u8)((word >> 24) & 0xff),
+      };
+      for (int i = 0; i < 4; i++) {
+        if (bytes[i] == 0) {
+          end = true;
+          break;
+        }
+        printf("%c", (char)bytes[i]);
+      }
+      addr += 4;
+    }
+    return 0;
+  } },
 };
 
 inline Inst parse_inst(u32 inst, CPU& cpu, Memory& mem) {
