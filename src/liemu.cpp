@@ -128,7 +128,9 @@ int cmd_x(const std::vector<std::string>& cmd) {
 
 int cmd_ls(const std::vector<std::string>& cmd) {
   auto_ls = !auto_ls;
-  do_ls();
+  if (auto_ls) {
+    do_ls();
+  }
   return 0;
 }
 int do_ls() {
