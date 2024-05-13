@@ -19,7 +19,7 @@ struct WatchPoint {
   int reg_idx;
   u32 val, old_val;
   
-  void update_val(CPU& cpu, Memory& mem) {
+  bool update_val(CPU& cpu, Memory& mem) {
     if (this->type == REG) {
       this->val = cpu.gp_regs[this->reg_idx];
     } else {
@@ -28,7 +28,9 @@ struct WatchPoint {
     if (this->val != this->old_val) {
       show_watchpoint(cpu, mem);
       this->old_val = this->val;
+      return true;
     }
+    return false;
   }
 
   void show_watchpoint(const CPU& cpu, const Memory& mem) {
@@ -58,10 +60,12 @@ struct WatchList {
     }
   }
 
-  void update_watchpoint(CPU& cpu, Memory& mem) {
+  bool update_watchpoint(CPU& cpu, Memory& mem) {
+    bool r = false;
     for (auto& wp : this->watch_list) {
-      wp.update_val(cpu, mem);
+      r = wp.update_val(cpu, mem) || r;
     }
+    return r;
   }
   
   void add_watchpoint(CPU& cpu, Memory& mem, std::string type, std::string w) {
@@ -149,6 +153,9 @@ struct Machine {
     while (1) {
       r = execute_one_step();
       if (-1 == r || 1 == r) {
+        break;
+      }
+      if(this->watchList.update_watchpoint(this->cpu, this->mem)) {
         break;
       }
     }
