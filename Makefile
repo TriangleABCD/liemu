@@ -8,6 +8,8 @@ READLINE_LIB=-L/usr/lib -lreadline
 
 NAME=liemu
 
+INSTS=./insts/fibonacci.txt
+
 $(NAME): $(OBJS)
 	@$(CXX) $(CXXFLAGS) -lm -o $@ $^ $(READLINE_LIB) $(LDFLAGS)
 
@@ -15,8 +17,8 @@ $(OBJS): obj/%.o: src/%.cpp $(HDRS)
 	@mkdir -p $$(dirname $@)
 	@$(CXX) $(CXXFLAGS) -c -o $@ $<
 
-run: $(NAME)
-	@./$(NAME)
+run: $(NAME) $(INSTS)
+	@./$(NAME) $(INSTS)
 
 clean:
 	@rm -rf $(NAME) obj/

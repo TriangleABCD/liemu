@@ -22,22 +22,42 @@ using i64 = int64_t;
 #define MB          1024*KB
 #define MEM_SIZE    64*MB
 #define MAX_MEM_IDX MEM_SIZE/4
-#define MAGIC       0x0000abde
+#define MAGIC       0xabde
 
-#define CODE_START  0x80000000
-#define CODE_END    0x80000000+8*KB
+#define MEM_START   0x80000000
+#define MEM_END     MEM_START+MEM_SIZE
 
-#define STACK_BTM   CODE_START+MEM_SIZE-4*KB
-#define STACK_TOP   CODE_END+MEM_SIZE-12*KB
+#define TRAMPOLINE  MEM_END
+#define TRAPFRAME   TRAMPOLINE-4*KB
 
-#define HEAP_BTM  CODE_END+4*KB
-#define HEAP_TOP    STACK_TOP-4*KB
+#define STACK_BTM   TRAPFRAME-5*KB
+#define STACK_TOP   STACK_BTM-8*KB
+
+#define CODE_START  MEM_START
+#define CODE_END    CODE_START+8*KB
+
+#define HEAP_TOP    STACK_TOP-1*KB
+#define HEAP_BTM    CODE_END+1*KB
+
+
+
+
+
+
 
 /*
  
- ---------------- <- memory end
- |  padding 4KB |
- ---------------- <- stack btm
+ ---------------- <- memory end = 0x84000000
+ |              |
+ |trampoline 4KB|
+ |              |
+ ________________
+ |              |
+ |trapframe 4KB |
+ |              |
+ ----------------
+ |  padding 1KB |
+ ---------------- <- stack btm = 0x83ffdc00
  |              |
  |              |
  |              |
@@ -48,7 +68,7 @@ using i64 = int64_t;
  |              |
  |              |
  ---------------- <- stack top
- |  padding 4KB |
+ |  padding 1KB |
  ---------------- <- heap top
  |              |
  |              |
@@ -60,7 +80,7 @@ using i64 = int64_t;
  |              |
  |              |
  ---------------- <- heap btm
- |  padding 4KB |
+ |  padding 1KB |
  ---------------- <- code end
  |              |
  |              |
@@ -71,7 +91,7 @@ using i64 = int64_t;
  |              |
  |              |
  |              |
- ---------------- <- 0x80000000 code start
+ ---------------- <- memory start = code start = 0x80000000
 
  */
 
