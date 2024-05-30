@@ -1,6 +1,6 @@
 # liemu
 
-A RISC-V emulator written in C++ which can run simple RV32I programs.
+A RISC-V emulator written in C++ which can run simple RV32I programs for education.
 
 ## build
 
@@ -22,5 +22,7 @@ make run
 - `clear`: clear screen
 - `si`: single step
 - `c`: continue
-- `info`: show register info
+- `info`: show register or watch ponit info
 - `x`: show memory content
+- `w`: add watch point
+- `d`: delete watch point
