@@ -21,7 +21,7 @@ using i64 = int64_t;
 #define KB          1024
 #define MB          1024*KB
 #define MEM_SIZE    64*MB
-#define MAX_MEM_IDX MEM_SIZE/4
+#define MAX_MEM_IDX MEM_SIZE/sizeof(u32)
 #define MAGIC       0xabde
 
 #define MEM_START   0x80000000
@@ -38,12 +38,6 @@ using i64 = int64_t;
 
 #define HEAP_TOP    STACK_TOP-1*KB
 #define HEAP_BTM    CODE_END+1*KB
-
-
-
-
-
-
 
 /*
  
