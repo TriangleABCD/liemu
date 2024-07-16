@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -O3 -g -Wall -Wimplicit-fallthrough -I/usr/include/readline
+CXXFLAGS = -std=c++17 -g -Wall -Wimplicit-fallthrough -I/usr/include/readline
 
 SRCS=$(wildcard src/*.cpp)
 HDRS=$(wildcard src/*.hpp)
