@@ -12,7 +12,7 @@ struct Memory {
   u32 mem[MAX_MEM_IDX];
 
   void resetMemory() {
-    for (int i = 0; i < MAX_MEM_IDX; i++) {
+    for (auto i = MAX_MEM_IDX - 1; i >= 0; i--) {
       this->write_pmem(i, MAGIC);
     }
   }

@@ -13,7 +13,7 @@ struct Machine {
   Memory memory;
   Cache cache;
 
-  u32 readMem(u32 addr) {}
+  u32 readMem(u32 addr) {return 0;}
   void writeMem(u32 addr, u32 data) {}
 };
 
