@@ -26,7 +26,6 @@ clean:
 LOG ?= "."
 
 gitpush:
-	@echo  $(LOG)
 	@git add .
 	@git commit -m "$(LOG)"
 	@git push
