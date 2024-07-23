@@ -14,7 +14,7 @@ int main(int argc, char* argv[]) {
   Sdb::cmd_clear(m, {});
 
   while (1) {
-    input = readline("\033[32m(liemu)\033[0m");
+    input = readline(GREEN("(liemu)"));
     add_history(input);
     std::vector<std::string> cmd_words = split(std::string(input));
     free(input);
@@ -25,12 +25,12 @@ int main(int argc, char* argv[]) {
         break;
       }
     }
-    if (-2 == r) {
+    if (Sdb::CmdResult::CMD_ERR == r) {
       fprintf(stderr, "\033[31mwrong command\033[0m\n");
-    } else if (1 == r) {
+    } else if (Sdb::CmdResult::CMD_QUIT == r) {
       break;
     }
   }
-  printf("\033[32mquit liemu.\033[0m\n");
+  printf(RED("quit liemu.\n"));
   return 0;
 }

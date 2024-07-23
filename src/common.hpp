@@ -8,7 +8,9 @@
 #include <vector>
 
 #define GREEN(x) "\033[32m" x "\033[0m"
-#define RED(x) "\033[32m" x "\033[0m"
+#define RED(x) "\033[31m" x "\033[0m"
+
+#define self (*this)
 
 // type aliases for arch specific types
 using u8  = uint8_t;

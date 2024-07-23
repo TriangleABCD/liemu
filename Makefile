@@ -23,4 +23,12 @@ run: $(NAME) $(INSTS)
 clean:
 	@rm -rf $(NAME) obj/
 
-.PHONY: clean run
+LOG ?= "."
+
+gitpush:
+	@echo  $(LOG)
+	@git add .
+	@git commit -m "$(LOG)"
+	@git push
+
+.PHONY: clean run gitpush

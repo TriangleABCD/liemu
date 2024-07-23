@@ -13,11 +13,11 @@ struct Machine {
   Cache cache;
 
   u32 readMem(u32 addr) {
-    return Machine::memory.read(addr);
+    return self.memory.read(addr);
   }
 
   void writeMem(u32 addr, u32 data) {
-    Machine::memory.write(addr, data);
+    self.memory.write(addr, data);
   }
 };
 
