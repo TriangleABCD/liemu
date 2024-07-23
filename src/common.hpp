@@ -7,6 +7,9 @@
 #include <sstream>
 #include <vector>
 
+#define GREEN(x) "\033[32m" x "\033[0m"
+#define RED(x) "\033[32m" x "\033[0m"
+
 // type aliases for arch specific types
 using u8  = uint8_t;
 using u16 = uint16_t;

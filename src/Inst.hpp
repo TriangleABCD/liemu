@@ -3,20 +3,16 @@
 #define INST_HPP 
 
 #include <string>
-#include <vector>
 #include <functional>
 
-#include "common.hpp"
-#include "CPU.hpp"
-#include "Memory.hpp"
-
+#include "Machine.hpp"
 
 struct Inst {
   int result = -1;
   std::string name = "nop";
 
   std::function<
-    int(const Inst&, CPU&, Memory&)
+    int(const Inst&, Machine&)
   > doit;
 
   struct {
