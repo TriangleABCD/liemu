@@ -54,7 +54,7 @@ struct CPU {
     }
     this->pc = _start;
     this->gp_regs[this->reg2idx("sp")] = STACK_BTM;
-    this->gp_regs[this->reg2idx("ra")] = CODE_START - 4; 
+    this->gp_regs[this->reg2idx("ra")] = _start - 4; 
   }
 
   void info_reg(std::string reg = "") {

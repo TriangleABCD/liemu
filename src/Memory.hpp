@@ -20,7 +20,7 @@ struct Memory {
   void load_insts_into_mem(std::string path) {
     std::fstream file(path);
     if (!file.is_open()) {
-      fprintf(stderr, "\033[31mfailed to open file: %s\033[0m\n", path.c_str());
+      fprintf(stderr, RED("failed to open file: %s\n"), path.c_str());
       return;
     }
     std::string line;
