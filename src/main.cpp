@@ -26,7 +26,7 @@ int main(int argc, char* argv[]) {
       }
     }
     if (Sdb::CmdResult::CMD_ERR == r) {
-      fprintf(stderr, "\033[31mwrong command\033[0m\n");
+      fprintf(stderr, RED("wrong command\n"));
     } else if (Sdb::CmdResult::CMD_QUIT == r) {
       break;
     }

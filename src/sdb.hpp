@@ -82,7 +82,28 @@ inline int cmd_si(Machine& m, const std::vector<std::string>& cmd) {
 }
 
 inline int cmd_info(Machine& m, const std::vector<std::string>& cmd) {
+  if (cmd.size() == 1) {
+    return CmdResult::CMD_ERR;
+  }
+  if (cmd.size() == 2 && cmd[1] != "r" && cmd[1] != "w") {
+    return CmdResult::CMD_ERR;
+  }
+  
+  if (cmd[1] == "w") {
+    m.watchList.info_watchpoint(m.cpu, m.memory); 
+    return CmdResult::CMD_OK;
+  }
 
+  if (cmd.size() == 2) {
+    m.cpu.info_reg();
+  } else {
+    for (auto& cc : cmd) {
+      if (cc == "info" || cc == "r") {
+        continue;
+      }
+      m.cpu.info_reg(cc);
+    }
+  }
   return CmdResult::CMD_OK;
 }
 

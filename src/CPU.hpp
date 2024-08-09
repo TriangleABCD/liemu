@@ -31,7 +31,7 @@ struct CPU {
   void write_reg(std::string reg, u32 val) {
     int idx = this->reg2idx(reg);
     if (idx == -1) {
-      fprintf(stderr, "\033[31mwrong reg name\033[0m\n");
+      fprintf(stderr, RED("wrong reg name\n"));
       return;
     }
     this->gp_regs[idx] = val;
@@ -40,7 +40,7 @@ struct CPU {
 
   void write_reg(int idx, u32 val) {
     if (idx < 0 || idx >= 32) {
-      fprintf(stderr, "\033[31mwrong reg idx\033[0m\n");
+      fprintf(stderr, RED("wrong reg idx\n"));
       return;
     }
     this->gp_regs[idx] = val;
@@ -59,23 +59,30 @@ struct CPU {
 
   void info_reg(std::string reg = "") {
     if ("pc" == reg) {
-      printf("\033[32m%s\033[0m:\t0x%08x\n", reg.c_str(), this->pc);
+      printf(GREEN("%s")":\t0x%08x\n", reg.c_str(), this->pc);
       return;
     }
     if ("" != reg) {
       int idx = this->reg2idx(reg);
       if (idx == -1) {
-        fprintf(stderr, "\033[31mwrong reg name\033[0m\n");
+        fprintf(stderr, RED("wrong reg name\n"));
         return;
       }
-      printf("\033[32m%s\033[0m:\t0x%08x\n", reg.c_str(), this->gp_regs[idx]);
+      printf(GREEN("%s")":\t0x%08x\n", reg.c_str(), this->gp_regs[idx]);
       return;
     }
+    int ln = 0;
     for (int i = 0; i < 32; i++) {
       auto& name = this->reg_names[i];
-      printf("\033[32m%s\033[0m:\t0x%08x\n", name.c_str(), this->gp_regs[i]);
+      printf(GREEN("%s")":\t0x%08x", name.c_str(), this->gp_regs[i]);
+      ln++;
+      if (ln % 2 == 0) {
+        printf("\n");
+      } else {
+        printf("\t");
+      }
     }
-    printf("\033[32mpc\033[0m:\t0x%08x\n", this->pc);
+    printf(GREEN("pc")":\t0x%08x\n", this->pc);
   }
 };
 
