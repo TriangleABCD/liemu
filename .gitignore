@@ -1,6 +1,8 @@
 obj/
 liemu
 
+out.*
+
 # Prerequisites
 *.d
 
