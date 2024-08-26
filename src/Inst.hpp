@@ -108,12 +108,12 @@ inline Inst parseInst(u32 inst, Machine& m) {
         }
         case 0b001: {
           res.name = "lh ";
-          res.name += cpu.reg_names[rd];
-          sprintf(buf, "0x%x(%s)", (i16)imm, cpu.reg_names[rs1].c_str());
+          res.name += m.cpu.reg_names[rd];
+          sprintf(buf, "0x%x(%s)", (i16)imm, m.cpu.reg_names[rs1].c_str());
           res.name += ", " + std::string(buf);
 
-          res.doit = [](const Inst& inst, CPU& cpu, Memory& mem) {
-            u32 addr = (i32)cpu.gp_regs[inst.rs1] + inst.imm;
+          res.doit = [](const Inst& inst, Machine& m) {
+            u32 addr = (i32)m.cpu.gp_regs[inst.preValue.rs1] + inst.preValue.imm;
             u8 op = addr % 4;
             i16 hw = 0;
             if (0 == op) {
@@ -127,7 +127,7 @@ inline Inst parseInst(u32 inst, Machine& m) {
               i8 hw2 = m.readMem(addr+1);
               hw = (hw2 << 8) | hw1;
             }
-            cpu.write_reg(inst.rd, i32(hw));
+            m.cpu.write_reg(inst.preValue.rd, i32(hw));
             return 0;
           };
 
@@ -135,8 +135,8 @@ inline Inst parseInst(u32 inst, Machine& m) {
         }
         case 0b010: {
           res.name = "lw ";
-          res.name += cpu.reg_names[rd];
-          sprintf(buf, "%d(%s)", (i16)imm, cpu.reg_names[rs1].c_str());
+          res.name += m.cpu.reg_names[rd];
+          sprintf(buf, "%d(%s)", (i16)imm, m.cpu.reg_names[rs1].c_str());
           res.name += ", " + std::string(buf);
 
           res.doit = [](const Inst& inst, CPU& cpu, Memory& mem) {
