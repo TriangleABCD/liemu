@@ -10,6 +10,7 @@
 
 #include "common.hpp"
 #include "Machine.hpp"
+#include "Inst.hpp"
 
 namespace Sdb {
 
