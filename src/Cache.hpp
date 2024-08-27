@@ -21,11 +21,11 @@ struct CacheBlock {
   u32 data[(BLOCK_SIZE>>2)];
 
   void resetBlock() {
-    valid = false;
-    dirty = false;
-    tag = 0;
+    self.valid = false;
+    self.dirty = false;
+    self.tag = 0;
     for (int i = 0; i < (BLOCK_SIZE>>2); i++) {
-      data[i] = MAGIC;
+      self.data[i] = MAGIC;
     }
   }
 };
@@ -40,7 +40,7 @@ struct CacheSet {
   int total_cnt;
   int hit_cnt;
 
-  CacheSet(int level = 1, int size = L1_CACHE_SIZE) {
+  CacheSet(int level = 3, int size = L1_CACHE_SIZE) {
     self.level = level;
     self.blocks.resize(size/BLOCK_SIZE);
     for (auto& block : self.blocks) {
@@ -51,15 +51,16 @@ struct CacheSet {
     self.hit_cnt = 0;
   }
 
-  u32 read(Memory& mem, u32 addr) {
-
+  u32 read(Memory& mem, CacheSet& nextCache, u32 addr) {
+    assert(addr % 4 == 0);
+    if (self.inCache[addr]) {
+      self.total_cnt++;
+      self.hit_cnt++;
+      return self.tag_map[addr].data[addr%BLOCK_SIZE];
+    }
   }
 
-  u32 write(Memory& mem, u32 addr, u32 val) {
-
-  }
-
-  void replaceBlock(Memory& mem, u32 addr) {
+  u32 write(Memory& mem, CacheSet& nextCache, u32 addr, u32 val) {
 
   }
 };
