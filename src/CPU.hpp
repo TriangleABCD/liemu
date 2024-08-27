@@ -47,14 +47,14 @@ struct CPU {
     this->gp_regs[0] = 0;
   }
 
-  void resetCPU(u32 _start = CODE_START) {
+  void resetCPU(u32 _start = CODE_START, u32 _end = CODE_END) {
     this->write_reg("$0", 0);
     for (int i = 1; i < 32; i++) {
       this->gp_regs[i] = MAGIC;
     }
     this->pc = _start;
     this->gp_regs[this->reg2idx("sp")] = STACK_BTM;
-    this->gp_regs[this->reg2idx("ra")] = _start - 4; 
+    this->gp_regs[this->reg2idx("ra")] = _end; 
   }
 
   void info_reg(std::string reg = "") {

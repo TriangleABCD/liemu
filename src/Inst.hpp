@@ -120,12 +120,9 @@ inline Inst parseInst(u32 inst, Machine& m) {
               hw = m.readMem(addr);
             } else if (2 == op) {
               hw = m.readMem(addr) >> 16;
-            } else if (1 == op) {
-              hw = m.readMem(addr) >> 8;
             } else {
-              i8 hw1 = m.readMem(addr) >> 24;
-              i8 hw2 = m.readMem(addr+1);
-              hw = (hw2 << 8) | hw1;
+              fprintf(stderr, RED("Unaligned memory access at 0x%08x\n"), addr);
+              return -1;
             }
             m.cpu.write_reg(inst.preValue.rd, i32(hw));
             return 0;
@@ -186,12 +183,9 @@ inline Inst parseInst(u32 inst, Machine& m) {
               hw = m.readMem(addr);
             } else if (2 == op) {
               hw = m.readMem(addr) >> 16;
-            } else if (1 == op) {
-              hw = m.readMem(addr) >> 8;
             } else {
-              u8 hw1 = m.readMem(addr) >> 24;
-              u8 hw2 = m.readMem(addr+1);
-              hw = (hw2 << 8) | hw1;
+              fprintf(stderr, RED("Unaligned memory access at 0x%08x\n"), addr);
+              return -1;
             }
             m.cpu.write_reg(inst.preValue.rd, u32(hw));
             return 0;
@@ -435,13 +429,9 @@ inline Inst parseInst(u32 inst, Machine& m) {
               val = (val & 0xffff0000) | hw;
             } else if (2 == op) {
               val = (val & 0x0000ffff) | (hw << 16);
-            } else if (1 == op) {
-              val = (val & 0xff0000ff) | (hw << 8);
             } else {
-              u32 val1 = m.readMem(addr+1);
-              val1 = (val1 & 0xffffff00) | (hw >> 8);
-              m.writeMem(addr+1, val1);
-              val = (val & 0x00ffffff) | (hw << 24);
+              fprintf(stderr, RED("Unaligned memory access at 0x%08x\n"), addr);
+              return -1;
             }
             m.writeMem(addr, val);
             return 0;

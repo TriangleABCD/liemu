@@ -1,5 +1,6 @@
 #include <cstdio>
 #include <cstdlib>
+#include <assert.h>
 #include <readline/readline.h>
 #include <readline/history.h>
 
@@ -10,8 +11,12 @@ Machine m;
 int main(int argc, char* argv[]) {
   char* input;
   using_history();
-  
+
+  assert(argc == 2);
+  std::string inst_path = std::string(argv[1]);
+
   Sdb::cmd_clear(m, {});
+  Sdb::resetMachine(m, inst_path, CODE_START, CODE_END);
 
   while (1) {
     input = readline(GREEN("(liemu)"));

@@ -6,6 +6,7 @@
 #include <cstdlib>
 #include <string>
 #include <vector>
+#include <fstream>
 #include <functional>
 
 #include "common.hpp"
@@ -19,8 +20,31 @@ inline std::map<u32, Inst> getParsedInst;
 
 inline WatchList watchList;
 
-inline void resetMachine(Machine& m) {
-  
+inline void load_insts_into_mem(std::string path, Machine& m) {
+  std::fstream file(path);
+  if (!file.is_open()) {
+    fprintf(stderr, RED("failed to open file: %s\n"), path.c_str());
+    return;
+  }
+  std::string line;
+  std::vector<u32> insts;
+  while(file >> line) {
+    u32 inst = strtol(line.c_str(), NULL, 16);
+    insts.push_back(inst);
+  }
+  file.close();
+  u32 addr = MEM_START;
+  for (const auto& inst : insts) {
+    m.memory.write(addr, inst);
+    addr += 4;
+  }
+}
+
+
+inline void resetMachine(Machine& m, std::string path, u32 _start = CODE_START, u32 _end = CODE_END) {
+  m.memory.resetMemory();
+  load_insts_into_mem(path, m);
+  m.cpu.resetCPU(_start, _end); 
 }
 
 

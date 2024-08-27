@@ -8,7 +8,9 @@ READLINE_LIB=-L/usr/lib -lreadline
 
 NAME=liemu
 
-INSTS=$(wildcard insts/*.inst)
+INST_NAME=fibonacci
+
+INSTS=insts/$(INST_NAME).inst
 
 $(NAME): $(OBJS)
 	@$(CXX) $(CXXFLAGS) -lm -o $@ $^ $(READLINE_LIB) $(LDFLAGS)
