@@ -41,13 +41,6 @@ inline void load_insts_into_mem(std::string path, Machine& m) {
 }
 
 
-inline void resetMachine(Machine& m, std::string path, u32 _start = CODE_START, u32 _end = CODE_END) {
-  m.memory.resetMemory();
-  load_insts_into_mem(path, m);
-  m.cpu.resetCPU(_start, _end); 
-}
-
-
 inline void preParseInst(Machine& m) {
   auto pc = m.cpu.pc;
   while (1) {
@@ -68,6 +61,14 @@ inline void preParseInst(Machine& m) {
 }
 
 
+inline void resetMachine(Machine& m, std::string path, u32 _start = CODE_START, u32 _end = CODE_END) {
+  m.memory.resetMemory();
+  load_insts_into_mem(path, m);
+  m.cpu.resetCPU(_start, _end); 
+  preParseInst(m);
+}
+
+
 inline int execute_one_step(Machine& m) {
   if (m.cpu.pc < CODE_START) {
     return 1;
@@ -76,7 +77,7 @@ inline int execute_one_step(Machine& m) {
   Inst inst = getParsedInst[m.cpu.pc];
   if (inst.result == -1) {
     fprintf(stderr, RED("finish\n"));
-    return -1;
+    return 1;
   }
 
   int r = inst.doit(inst, m);
