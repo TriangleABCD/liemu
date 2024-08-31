@@ -23,18 +23,30 @@
 #define GROUP_BIT_SIZE    2
 #define GROUP_SIZE        (1<<GROUP_BIT_SIZE)
 
+// all the above size is in byte
 
 struct BasicCache {
   std::vector<u32> data;
+  
+  // if the block is valid
   std::map<u32, bool> valid;
+  // if the block is dirty
   std::map<u32, bool> dirty;
+  // the tag of the block
+  std::map<u32, u32> tag;
+  // count the frequency of the block
   std::map<u32, int> lfu_cnt;
 
+  // if the block is in the cache
   std::map<u32, bool> inCache;
+  // if so, we can get the index of the block by the address immediately
   std::map<u32, int> addr2idx;
 
+  // the level of the cache
   int level;
+  // count of the access to the cache
   int cnt;
+  // count of the hit to the cache
   int hit;
 
   Memory* mem;
@@ -61,7 +73,7 @@ struct BasicCache {
     }
   }
 
-  void setMemory(Memory* mem, BasicCache* next_cache) {
+  void setNext(Memory* mem, BasicCache* next_cache) {
     self.mem = mem;
     self.next_cache = next_cache;
   }
@@ -80,21 +92,32 @@ struct IBasicCache : public BasicCache {
   }
 
   u32 read(u32 addr) override {
+    // the address should be aligned to 4 bytes (32 bits)
     assert((addr & 0x3) == 0);
     addr >>= 2;
 
     // if hit in cache
     if (self.inCache[addr]) {
+      // update the hit count
       self.hit++;
       int idx = self.addr2idx[addr];
+      // update the count of lfu
       self.lfu_cnt[idx]++;
+
       return self.data[idx];
     }
+
+    // if not hit in cache, we should load the block from the next memory
+
+    // fisrtly, we should find a position to put the loaded block in this cache
+    int 
+
+
     return 0;
   }
 
   void write(u32 addr, u32 val) override {
-    // u can't rewrite the data in instruction cache
+    // We usually can not rewrite the instruction memory.
     assert(false);
   }
 };
