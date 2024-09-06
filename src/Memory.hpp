@@ -6,7 +6,12 @@
 
 #include "common.hpp"
 
-struct Memory {
+struct AbstractMemory {
+  virtual u32 read(u32 addr) = 0;
+  virtual void write(u32 addr, u32 data) = 0;
+};
+
+struct Memory : public AbstractMemory {
   u32 mem[MAX_MEM_IDX];
 
   void resetMemory() {
@@ -25,12 +30,12 @@ struct Memory {
     self.mem[addr >> 2] = data; 
   }
   
-  u32 read(u32 vaddr) {
+  virtual u32 read(u32 vaddr) override {
     u32 paddr = vaddr - MEM_START;
     return self.read_pmem(paddr);
   }
 
-  void write(u32 vaddr, u32 data) {
+  virtual void write(u32 vaddr, u32 data) override {
     u32 paddr = vaddr - MEM_START;
     self.write_pmem(paddr, data);
   }

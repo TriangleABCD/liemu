@@ -74,7 +74,13 @@ inline int execute_one_step(Machine& m) {
     return 1;
   }
 
+  if (getParsedInst.find(m.cpu.pc) == getParsedInst.end()) {
+    fprintf(stderr, RED("fuck\n"));
+    return -1;
+  }
+
   Inst inst = getParsedInst[m.cpu.pc];
+  
   if (inst.result == -1) {
     fprintf(stderr, RED("finish\n"));
     return 1;
