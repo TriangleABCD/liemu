@@ -44,7 +44,7 @@ inline void load_insts_into_mem(std::string path, Machine& m) {
 inline void preParseInst(Machine& m) {
   auto pc = m.cpu.pc;
   while (1) {
-    u32 inst_value = m.readMem(pc);
+    u32 inst_value = m.memory.read(pc);
     if (inst_value == MAGIC) {
       break;
     }
@@ -236,7 +236,7 @@ inline int cmd_x(Machine& m, const std::vector<std::string>& cmd) {
   u32 addr = strtol(cmd[2].c_str()+2, nullptr, 16);
 
   for (int i = 0; i < n; i++) {
-    u32 word = m.readMem(addr + i * 4);
+    u32 word = m.memory.read(addr + i * 4);
     unsigned int bytes[4] {
       (word) & 0xff,
       (word >> 8) & 0xff,
@@ -252,7 +252,7 @@ inline int cmd_x(Machine& m, const std::vector<std::string>& cmd) {
 
 inline int cmd_ls(Machine& m, const std::vector<std::string>& cmd) {
   u32 pc = m.cpu.pc;
-  if (m.readMem(pc) == MAGIC) {
+  if (m.memory.read(pc) == MAGIC) {
     return 0;
   }
   u32 beg = pc - 5 * sizeof(u32);
@@ -265,7 +265,7 @@ inline int cmd_ls(Machine& m, const std::vector<std::string>& cmd) {
     if (cur > pc && cur - pc > 5 * sizeof(u32)) {
       break;
     }
-    u32 inst = m.readMem(cur);
+    u32 inst = m.memory.read(cur);
     if (inst == MAGIC) {
       break;
     }
