@@ -64,7 +64,7 @@ inline void preParseInst(Machine& m) {
 inline void resetMachine(Machine& m, std::string path, u32 _start = CODE_START, u32 _end = CODE_END) {
   m.memory.resetMemory();
   load_insts_into_mem(path, m);
-  m.cpu.resetCPU(_start, _end); 
+  m.cpu.resetCPU(_start, _end);
   preParseInst(m);
 }
 
@@ -75,7 +75,6 @@ inline int execute_one_step(Machine& m) {
   }
 
   if (getParsedInst.find(m.cpu.pc) == getParsedInst.end()) {
-    fprintf(stderr, RED("fuck\n"));
     return -1;
   }
 

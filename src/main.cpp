@@ -16,7 +16,7 @@ int main(int argc, char* argv[]) {
   std::string inst_path = std::string(argv[1]);
 
   Sdb::cmd_clear(m, {});
-  Sdb::resetMachine(m, inst_path, CODE_START, CODE_END);
+  Sdb::resetMachine(m, inst_path, CODE_START, CODE_START-4);
 
   while (1) {
     input = readline(GREEN("(liemu)"));

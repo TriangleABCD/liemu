@@ -760,7 +760,6 @@ inline Inst parseInst(u32 inst, Machine& m) {
                 |  ((((i32)inst >> 12) & 0xff) << 11)
                 |  ((((i32)inst >> 20) & 1) << 10)
                 |  (((i32)inst >> 21) & 0x3ff);
-      offset = offset << 1;
       res.preValue.rd = rd;
       res.preValue.offset = offset;
 
@@ -771,7 +770,7 @@ inline Inst parseInst(u32 inst, Machine& m) {
 
       res.doit = [](const Inst& inst, Machine& m) {
         m.cpu.write_reg(inst.preValue.rd, m.cpu.pc + 4);
-        m.cpu.pc += inst.preValue.offset;
+        m.cpu.pc = (i32)m.cpu.pc + (i32)inst.preValue.offset;
         return 0;
       };
 
