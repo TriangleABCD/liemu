@@ -80,6 +80,7 @@ inline int execute_one_step(Machine& m) {
     return -1;
   }
 
+  auto _ = m.readMem(m.cpu.pc);
   Inst inst = getParsedInst[m.cpu.pc];
   
   if (inst.result == -1) {
@@ -133,9 +134,11 @@ int cmd_continue(Machine& m, const std::vector<std::string>& cmd);
 int cmd_si(Machine& m, const std::vector<std::string>& cmd);
 int cmd_info(Machine& m, const std::vector<std::string>& cmd);
 int cmd_x(Machine& m, const std::vector<std::string>& cmd);
+int cmd_xx(Machine& m, const std::vector<std::string>& cmd);
 int cmd_ls(Machine& m, const std::vector<std::string>& cmd);
 int cmd_w(Machine& m, const std::vector<std::string>& cmd);
 int cmd_d(Machine& m, const std::vector<std::string>& cmd);
+int cmd_hit(Machine& m, const std::vector<std::string>& cmd);
 
 
 inline std::vector<Command> cmds {
@@ -146,9 +149,11 @@ inline std::vector<Command> cmds {
   { "si", "si [N], execute N steps", cmd_si },
   { "info", "info r/w [reg_name/watchpoint], show reg/watchpoint value", cmd_info },
   { "x", "x addr, print mem value on addr", cmd_x },
+  { "xx", "x addr, print mem value in cache on addr", cmd_xx },
   { "ls", "enable listing instructions automaticlly", cmd_ls },
   { "w", "add a watch point", cmd_w },
   { "d", "d watchpoint delete a watch point", cmd_d },
+  { "hit", "show cache hit rate", cmd_hit },
 };
 
 
@@ -237,6 +242,29 @@ inline int cmd_x(Machine& m, const std::vector<std::string>& cmd) {
   u32 addr = strtol(cmd[2].c_str()+2, nullptr, 16);
 
   for (int i = 0; i < n; i++) {
+    u32 word = m.memory.read(addr + i * 4);
+    unsigned int bytes[4] {
+      (word) & 0xff,
+      (word >> 8) & 0xff,
+      (word >> 16) & 0xff,
+      (word >> 24) & 0xff,
+    };
+    printf(GREEN("0x%08x")":\t0x%02x\t0x%02x\t0x%02x\t0x%02x\n", addr + i * 4, bytes[3], bytes[2], bytes[1], bytes[0]);
+  }
+
+  return CmdResult::CMD_OK;
+}
+
+
+inline int cmd_xx(Machine& m, const std::vector<std::string>& cmd) {
+  if (cmd.size() <= 1 || cmd.size() > 3) {
+    return CmdResult::CMD_ERR;
+  }
+  
+  int n = atoi(cmd[1].c_str());
+  u32 addr = strtol(cmd[2].c_str()+2, nullptr, 16);
+
+  for (int i = 0; i < n; i++) {
     u32 word = m.readMem(addr + i * 4);
     unsigned int bytes[4] {
       (word) & 0xff,
@@ -303,6 +331,12 @@ inline int cmd_d(Machine& m, const std::vector<std::string>& cmd) {
   }
   int id = atoi(cmd[1].c_str());
   watchList.del_watchpoint(id);
+  return CmdResult::CMD_OK;
+}
+
+
+inline int cmd_hit(Machine& m, const std::vector<std::string>& cmd) {
+  m.cache.showHit();
   return CmdResult::CMD_OK;
 }
 
