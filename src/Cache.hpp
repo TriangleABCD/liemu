@@ -102,7 +102,7 @@ struct BasicCache : public AbstractMemory {
   virtual u32 read(u32 addr) override {
     // the address should be aligned to 4 bytes (32 bits)
     assert((addr & 0x3) == 0);
-    addr >>= 2;
+    addr = ((addr >> 2) << 2);
 
     self.cnt++;
 
@@ -136,7 +136,7 @@ struct BasicCache : public AbstractMemory {
       
     */
 
-    int group_id = (addr >> 4) & 0x3;
+    int group_id = (addr >> 6) & 0x3;
 
     int blk_begin = group_id *  GROUP_SIZE * BLOCK_SIZE;
     int blk_end = blk_begin + GROUP_SIZE * BLOCK_SIZE;
@@ -169,7 +169,7 @@ struct BasicCache : public AbstractMemory {
     }
 
     // now we can finally load the block from the next memory to the target block
-    self.load_blk(addr << 2, target_blk);
+    self.load_blk(addr, target_blk);
     self.valid[target_blk] = true; 
     self.dirty[target_blk] = false;
     u32 first_word_in_blk_addr = addr & 0xfffffffc;
@@ -180,7 +180,7 @@ struct BasicCache : public AbstractMemory {
     }
     self.lfu_cnt[target_blk] = 1;
 
-    int offset = addr & 0xf;
+    int offset = (addr >> 2) & 0xf;
     u32 res = self.data[target_blk * BLOCK_SIZE + offset];
 
     return res;
@@ -189,7 +189,7 @@ struct BasicCache : public AbstractMemory {
   virtual void write(u32 addr, u32 val) override {
     // the address should be aligned to 4 bytes (32 bits)
     assert((addr & 0x3) == 0);
-    addr >>= 2;
+    addr = ((addr >> 2) << 2);
 
     self.cnt++;
 
@@ -205,26 +205,7 @@ struct BasicCache : public AbstractMemory {
       self.dirty[(idx >> BLOCK_BIT_SIZE)] = true;
     }
 
-    // if not hit in cache, we should load the block from the next memory
-
-    // fisrtly, we should find a position to put the loaded block in this cache
-    
-    /*
-     
-    memory address:
-    -------------------------------------
-    | blk_id 28 | group_id 2 | offset 4 |
-    -------------------------------------
-      
-    cahce address:
-    --------------------------------------
-    | group_id 2 | blk_id m-2 | offset 4 |
-    --------------------------------------
-    m + 4 + 2 = slef.cache_size_bit
-      
-    */
-
-    int group_id = (addr >> 4) & 0x3;
+    int group_id = (addr >> 6) & 0x3;
 
     int blk_begin = group_id *  GROUP_SIZE * BLOCK_SIZE;
     int blk_end = blk_begin + GROUP_SIZE * BLOCK_SIZE;
@@ -257,7 +238,7 @@ struct BasicCache : public AbstractMemory {
     }
 
     // now we can finally load the block from the next memory to the target block
-    self.load_blk(addr << 2, target_blk);
+    self.load_blk(addr, target_blk);
     self.valid[target_blk] = true; 
     self.dirty[target_blk] = true;
     u32 first_word_in_blk_addr = addr & 0xfffffffc;
@@ -268,7 +249,7 @@ struct BasicCache : public AbstractMemory {
     }
     self.lfu_cnt[target_blk] = 1;
 
-    int offset = addr & 0xf;
+    int offset = (addr >> 2) & 0xf;
     self.data[target_blk * BLOCK_SIZE + offset] = val;
   }
 

@@ -8,7 +8,7 @@ READLINE_LIB=-L/usr/lib -lreadline
 
 NAME=liemu
 
-INST_NAME=fibonacci
+INST_NAME=test_cache
 
 INSTS=insts/$(INST_NAME).inst
 
@@ -22,6 +22,9 @@ $(OBJS): obj/%.o: src/%.cpp $(HDRS)
 run: $(NAME) $(INSTS)
 	@./$(NAME) $(INSTS)
 
+gdb: $(NAME) $(INSTS)
+	@gdb --args ./$(NAME) $(INSTS)
+
 clean:
 	@rm -rf $(NAME) obj/
 
@@ -32,4 +35,4 @@ gitpush:
 	@git commit -m "$(LOG)"
 	@git push
 
-.PHONY: clean run gitpush
+.PHONY: clean run gitpush gdb

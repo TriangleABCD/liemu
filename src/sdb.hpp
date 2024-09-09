@@ -66,6 +66,8 @@ inline void resetMachine(Machine& m, std::string path, u32 _start = CODE_START, 
   load_insts_into_mem(path, m);
   m.cpu.resetCPU(_start, _end);
   preParseInst(m);
+
+  m.memory.write(0x80002400, 0x12345678);
 }
 
 
@@ -235,7 +237,7 @@ inline int cmd_x(Machine& m, const std::vector<std::string>& cmd) {
   u32 addr = strtol(cmd[2].c_str()+2, nullptr, 16);
 
   for (int i = 0; i < n; i++) {
-    u32 word = m.memory.read(addr + i * 4);
+    u32 word = m.readMem(addr + i * 4);
     unsigned int bytes[4] {
       (word) & 0xff,
       (word >> 8) & 0xff,
