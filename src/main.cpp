@@ -23,6 +23,11 @@ int main(int argc, char* argv[]) {
     add_history(input);
     std::vector<std::string> cmd_words = split(std::string(input));
     free(input);
+
+    if (cmd_words.size() == 0) {
+      continue;
+    }
+
     int r = -1;
     for (auto& c : Sdb::cmds) {
       if (cmd_words[0] == c.cmd_name) {
