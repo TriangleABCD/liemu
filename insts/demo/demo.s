@@ -2,7 +2,7 @@
 
 main:
   li a0, 0x80002400
-  li a1, 1024
+  li a1, 8192
   li a2, 0
 loop:
   slli t0, a2, 2
