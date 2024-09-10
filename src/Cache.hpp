@@ -8,13 +8,13 @@
 #include "common.hpp"
 #include "Memory.hpp"
 
-#define L1_CACHE_BIN_SIZE 6
+#define L1_CACHE_BIN_SIZE 8
 #define L1_CACHE_SIZE     (1<<L1_CACHE_BIN_SIZE)
 
-#define L2_CACHE_BIN_SIZE 8
+#define L2_CACHE_BIN_SIZE 10
 #define L2_CACHE_SIZE     (1<<L2_CACHE_BIN_SIZE)
 
-#define L3_CACHE_BIN_SIZE 10
+#define L3_CACHE_BIN_SIZE 12
 #define L3_CACHE_SIZE     (1<<L3_CACHE_BIN_SIZE)
 
 #define LINE_BIN_SIZE    4

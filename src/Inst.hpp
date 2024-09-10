@@ -627,7 +627,6 @@ inline Inst parseInst(u32 inst, Machine& m) {
                 |  ((((i32)inst >> 7) & 1) << 10)
                 |  ((((i32)inst >> 25) & 0x3f) << 4)
                 |  (((i32)inst >> 8) & 0xf);
-      offset = offset << 1;
 
       res.preValue.rs1 = rs1;
       res.preValue.rs2 = rs2;
@@ -644,7 +643,7 @@ inline Inst parseInst(u32 inst, Machine& m) {
 
           res.doit = [](const Inst& inst, Machine& m) {
             if (m.cpu.gp_regs[inst.preValue.rs1] == m.cpu.gp_regs[inst.preValue.rs2]) {
-              m.cpu.pc += inst.preValue.offset;
+              m.cpu.pc = (i32)m.cpu.pc + (i32)(inst.preValue.offset);
             }
             return 0;
           };
@@ -659,7 +658,7 @@ inline Inst parseInst(u32 inst, Machine& m) {
 
           res.doit = [](const Inst& inst, Machine& m) {
             if (m.cpu.gp_regs[inst.preValue.rs1] != m.cpu.gp_regs[inst.preValue.rs2]) {
-              m.cpu.pc += inst.preValue.offset;
+              m.cpu.pc = (i32)m.cpu.pc + (i32)(inst.preValue.offset);
             }
             return 0;
           };
@@ -674,7 +673,7 @@ inline Inst parseInst(u32 inst, Machine& m) {
 
           res.doit = [](const Inst& inst, Machine& m) {
             if ((i32)m.cpu.gp_regs[inst.preValue.rs1] < (i32)m.cpu.gp_regs[inst.preValue.rs2]) {
-              m.cpu.pc += inst.preValue.offset;
+              m.cpu.pc = (i32)m.cpu.pc + (i32)(inst.preValue.offset);
             }
             return 0;
           };
@@ -689,7 +688,7 @@ inline Inst parseInst(u32 inst, Machine& m) {
 
           res.doit = [](const Inst& inst, Machine& m) {
             if ((i32)m.cpu.gp_regs[inst.preValue.rs1] >= (i32)m.cpu.gp_regs[inst.preValue.rs2]) {
-              m.cpu.pc += inst.preValue.offset;
+              m.cpu.pc = (i32)m.cpu.pc + (i32)(inst.preValue.offset);
             }
             return 0;
           };
@@ -704,7 +703,7 @@ inline Inst parseInst(u32 inst, Machine& m) {
 
           res.doit = [](const Inst& inst, Machine& m) {
             if ((u32)m.cpu.gp_regs[inst.preValue.rs1] < (u32)m.cpu.gp_regs[inst.preValue.rs2]) {
-              m.cpu.pc += inst.preValue.offset;
+              m.cpu.pc = (i32)m.cpu.pc + (i32)(inst.preValue.offset);
             }
             return 0;
           };
@@ -719,7 +718,7 @@ inline Inst parseInst(u32 inst, Machine& m) {
 
           res.doit = [](const Inst& inst, Machine& m) {
             if ((u32)m.cpu.gp_regs[inst.preValue.rs1] >= (u32)m.cpu.gp_regs[inst.preValue.rs2]) {
-              m.cpu.pc += inst.preValue.offset;
+              m.cpu.pc = (i32)m.cpu.pc + (i32)(inst.preValue.offset);
             }
             return 0;
           };
