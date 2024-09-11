@@ -812,24 +812,30 @@ inline Inst parseInst(u32 inst, Machine& m) {
           }
           break;
         }
-        case 0b001:
+        case 0b001: {
           res.name = "csrrw (skip)";
           break;
-        case 0b010:
+        }
+        case 0b010: {
           res.name = "csrrs (skip)";
           break;
-        case 0b011:
+        }
+        case 0b011: {
           res.name = "csrrc (skip)";
           break;
-        case 0b101:
+        }
+        case 0b101: {
           res.name = "csrrwi (skip)";
           break;
-        case 0b110:
+        }
+        case 0b110: {
           res.name = "csrrsi (skip)";
           break;
-        case 0b111:
+        }
+        case 0b111: {
           res.name = "csrrci (skip)";
           break;
+        }
       }
       break;
     }

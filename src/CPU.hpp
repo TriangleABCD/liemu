@@ -11,7 +11,19 @@
 
 struct CPU {
   u32 gp_regs[32];
+  
   u32 pc;
+
+  struct {
+    u32 mstatus;
+    u32 mip;
+    u32 mie;
+    u32 mcause;
+    u32 mtvec;
+    u32 mtval;
+    u32 mepc;
+    u32 mscratch;
+  } csr;
 
   std::vector<std::string> reg_names {
     "$0", "ra", "sp", "gp", "tp", "t0", "t1", "t2",

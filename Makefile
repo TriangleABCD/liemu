@@ -8,7 +8,7 @@ READLINE_LIB=-L/usr/lib -lreadline
 
 NAME=liemu
 
-INST_NAME=fibonacci
+INST_NAME=test_cache
 
 INSTS=insts/$(INST_NAME).inst
 
