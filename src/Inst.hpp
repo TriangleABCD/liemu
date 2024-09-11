@@ -627,6 +627,7 @@ inline Inst parseInst(u32 inst, Machine& m) {
                 |  ((((i32)inst >> 7) & 1) << 10)
                 |  ((((i32)inst >> 25) & 0x3f) << 4)
                 |  (((i32)inst >> 8) & 0xf);
+      offset <<= 1;
 
       res.preValue.rs1 = rs1;
       res.preValue.rs2 = rs2;
@@ -644,6 +645,7 @@ inline Inst parseInst(u32 inst, Machine& m) {
           res.doit = [](const Inst& inst, Machine& m) {
             if (m.cpu.gp_regs[inst.preValue.rs1] == m.cpu.gp_regs[inst.preValue.rs2]) {
               m.cpu.pc = (i32)m.cpu.pc + (i32)(inst.preValue.offset);
+              m.cpu.pc -= 4;
             }
             return 0;
           };
@@ -659,6 +661,7 @@ inline Inst parseInst(u32 inst, Machine& m) {
           res.doit = [](const Inst& inst, Machine& m) {
             if (m.cpu.gp_regs[inst.preValue.rs1] != m.cpu.gp_regs[inst.preValue.rs2]) {
               m.cpu.pc = (i32)m.cpu.pc + (i32)(inst.preValue.offset);
+              m.cpu.pc -= 4;
             }
             return 0;
           };
@@ -674,6 +677,7 @@ inline Inst parseInst(u32 inst, Machine& m) {
           res.doit = [](const Inst& inst, Machine& m) {
             if ((i32)m.cpu.gp_regs[inst.preValue.rs1] < (i32)m.cpu.gp_regs[inst.preValue.rs2]) {
               m.cpu.pc = (i32)m.cpu.pc + (i32)(inst.preValue.offset);
+              m.cpu.pc -= 4;
             }
             return 0;
           };
@@ -689,6 +693,7 @@ inline Inst parseInst(u32 inst, Machine& m) {
           res.doit = [](const Inst& inst, Machine& m) {
             if ((i32)m.cpu.gp_regs[inst.preValue.rs1] >= (i32)m.cpu.gp_regs[inst.preValue.rs2]) {
               m.cpu.pc = (i32)m.cpu.pc + (i32)(inst.preValue.offset);
+              m.cpu.pc -= 4;
             }
             return 0;
           };
@@ -704,6 +709,7 @@ inline Inst parseInst(u32 inst, Machine& m) {
           res.doit = [](const Inst& inst, Machine& m) {
             if ((u32)m.cpu.gp_regs[inst.preValue.rs1] < (u32)m.cpu.gp_regs[inst.preValue.rs2]) {
               m.cpu.pc = (i32)m.cpu.pc + (i32)(inst.preValue.offset);
+              m.cpu.pc -= 4;
             }
             return 0;
           };
@@ -719,6 +725,7 @@ inline Inst parseInst(u32 inst, Machine& m) {
           res.doit = [](const Inst& inst, Machine& m) {
             if ((u32)m.cpu.gp_regs[inst.preValue.rs1] >= (u32)m.cpu.gp_regs[inst.preValue.rs2]) {
               m.cpu.pc = (i32)m.cpu.pc + (i32)(inst.preValue.offset);
+              m.cpu.pc -= 4;
             }
             return 0;
           };
@@ -735,6 +742,8 @@ inline Inst parseInst(u32 inst, Machine& m) {
       u8 rs1 = (inst >> 15) & 0x1f;
       i16 offset = ((i32)inst >> 20);
 
+      offset <<= 1;
+
       res.preValue.rd = rd;
       res.preValue.rs1 = rs1;
       res.preValue.offset = offset;
@@ -747,6 +756,7 @@ inline Inst parseInst(u32 inst, Machine& m) {
       res.doit = [](const Inst& inst, Machine& m) {
         u32 tmp = m.cpu.pc + 4;
         m.cpu.pc = ((i32)m.cpu.gp_regs[inst.preValue.rs1] + inst.preValue.offset) & 0xfffffffe;
+        m.cpu.pc -= 4;
         m.cpu.write_reg(inst.preValue.rd, tmp);
         return 0;
       };
@@ -759,6 +769,9 @@ inline Inst parseInst(u32 inst, Machine& m) {
                 |  ((((i32)inst >> 12) & 0xff) << 11)
                 |  ((((i32)inst >> 20) & 1) << 10)
                 |  (((i32)inst >> 21) & 0x3ff);
+
+      offset <<= 1;
+
       res.preValue.rd = rd;
       res.preValue.offset = offset;
 
@@ -770,6 +783,7 @@ inline Inst parseInst(u32 inst, Machine& m) {
       res.doit = [](const Inst& inst, Machine& m) {
         m.cpu.write_reg(inst.preValue.rd, m.cpu.pc + 4);
         m.cpu.pc = (i32)m.cpu.pc + (i32)inst.preValue.offset;
+        m.cpu.pc -= 4;
         return 0;
       };
 

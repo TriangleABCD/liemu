@@ -1,15 +1,17 @@
 .globl main
 
 main:
-  li a0, 0x80002400
-  li a1, 1024
-  li a2, 0
+  addi a0, x0, 0
+  addi a1, x0, 1
+  addi t0, x0, 8
 loop:
-  slli t0, a2, 2
-  add t0, a0, t0
-  lw t1, 0(t0)
-  addi t1, t1, 1
-  sw t1, 0(t0)
-
-  addi a2, a2, 1
-  bne a2, a1, loop
+  add a2, a0, a1
+  addi a0, a1, 0
+  addi a1, a2, 0
+  addi t0, t0, -1
+  bne t0, x0, loop
+  add a0, x0, a1
+  addi a7, x0, 1
+  ecall
+spin:
+  j spin
