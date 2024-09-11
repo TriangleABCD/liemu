@@ -66,8 +66,6 @@ inline void resetMachine(Machine& m, std::string path, u32 _start = CODE_START, 
   load_insts_into_mem(path, m);
   m.cpu.resetCPU(_start, _end);
   preParseInst(m);
-
-  m.memory.write(0x80002400, 0x12345678);
 }
 
 
