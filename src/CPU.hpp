@@ -60,7 +60,7 @@ struct CPU {
   }
 
   void resetCPU(u32 _start = CODE_START, u32 _end = CODE_END) {
-    self.write_reg("$0", 0);
+    self.write_reg("x0", 0);
     for (int i = 1; i < 32; i++) {
       self.gp_regs[i] = MAGIC;
     }
