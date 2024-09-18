@@ -13,6 +13,7 @@
 #include "Machine.hpp"
 #include "Inst.hpp"
 #include "Watch.hpp"
+#include "Trap.hpp"
 
 namespace Sdb {
 
@@ -137,6 +138,7 @@ int cmd_ls(Machine& m, const std::vector<std::string>& cmd);
 int cmd_w(Machine& m, const std::vector<std::string>& cmd);
 int cmd_d(Machine& m, const std::vector<std::string>& cmd);
 int cmd_hit(Machine& m, const std::vector<std::string>& cmd);
+int cmd_trap(Machine& m, const std::vector<std::string>& cmd);
 
 
 inline std::vector<Command> cmds {
@@ -152,6 +154,7 @@ inline std::vector<Command> cmds {
   { "w", "add a watch point", cmd_w },
   { "d", "d watchpoint delete a watch point", cmd_d },
   { "hit", "show cache hit rate", cmd_hit },
+  { "trap", "trap [trap_num], trigger a trap", cmd_trap },
 };
 
 
@@ -335,6 +338,25 @@ inline int cmd_d(Machine& m, const std::vector<std::string>& cmd) {
 
 inline int cmd_hit(Machine& m, const std::vector<std::string>& cmd) {
   m.cache.showHit();
+  return CmdResult::CMD_OK;
+}
+
+
+inline int cmd_trap(Machine& m, const std::vector<std::string>& cmd) {
+  if (cmd.size() != 2) {
+    return CmdResult::CMD_ERR;
+  }
+
+  int trap_num = atoi(cmd[1].c_str());
+  if (trap_num < 0 || trap_num >= TRAP_MAX_NUM) {
+    fprintf(stderr, RED("invalid trap num\n"));
+    return CmdResult::CMD_ERR;
+  }
+
+  if (trap_on()) {
+    trap(m, trap_num);
+  }
+
   return CmdResult::CMD_OK;
 }
 
