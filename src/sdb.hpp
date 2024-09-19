@@ -353,9 +353,7 @@ inline int cmd_trap(Machine& m, const std::vector<std::string>& cmd) {
     return CmdResult::CMD_ERR;
   }
 
-  if (trap_on()) {
-    trap(m, trap_num);
-  }
+  trap_comming(trap_num);
 
   return CmdResult::CMD_OK;
 }

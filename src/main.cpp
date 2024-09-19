@@ -40,6 +40,7 @@ int main(int argc, char* argv[]) {
     } else if (Sdb::CmdResult::CMD_QUIT == r) {
       break;
     }
+    trap(m);
   }
   printf(RED("quit liemu.\n"));
   return 0;

@@ -32,11 +32,10 @@ using i64 = int64_t;
 #define MEM_START   0x80000000
 #define MEM_END     MEM_START+MEM_SIZE
 
-#define TRAMP_TOP   MEM_END
-#define TRAPFRAME   TRAMP_TOP-4*KB
-#define TRAMP_BTM   TRAPFRAME
+#define TRAMPOLINE_TOP   MEM_END
+#define TRAMPOLINE_BTM   TRAMPOLINE_TOP-4*KB
 
-#define STACK_BTM   TRAPFRAME-5*KB
+#define STACK_BTM   TRAMPOLINE_BTM-1*KB
 #define STACK_TOP   STACK_BTM-8*KB
 
 #define CODE_START  MEM_START
@@ -51,11 +50,7 @@ using i64 = int64_t;
  |              |
  |trampoline 4KB|
  |              |
- ---------------- <- trapframe btm = trampline btm
- |              |
- |trapframe 4KB |
- |              |
- ----------------
+ ---------------- <- trampline btm
  |  padding 1KB |
  ---------------- <- stack btm = 0x83ffdc00
  |              |

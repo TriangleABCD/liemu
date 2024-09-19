@@ -3,6 +3,7 @@
 #define TRAP_H
 
 #include <vector>
+#include <queue>
 
 #include "Machine.hpp"
 
@@ -10,11 +11,27 @@
 
 
 inline std::vector<std::vector<int>> trap_priority = {
-  {0, 1, 2, 3},
-  {1, 0, 2, 3},
-  {2, 1, 0, 3},
-  {3, 2, 1, 0}
+  {1, 1, 1, 1},
+  {0, 1, 1, 1},
+  {0, 0, 1, 1},
+  {0, 0, 0, 1}
 };
+
+inline auto cmp = [](const int& a, const int& b) {
+  return (trap_priority[a][b] == 1);
+};
+
+inline std::priority_queue<int, std::vector<int>, decltype(cmp)> trap_queue(cmp);
+
+inline void show_trap_queue() {
+  printf("trap queue: ");
+  auto q = trap_queue;
+  while (!q.empty()) {
+    printf("%d ", q.top());
+    q.pop();
+  }
+  printf("\n");
+}
 
 
 inline void initTrap(Machine& m) {
@@ -22,7 +39,7 @@ inline void initTrap(Machine& m) {
 
   };
 
-  u32 addr = TRAMP_BTM;
+  u32 addr = TRAMPOLINE_BTM;
   for (const auto& inst : trampoline_code) {
     m.memory.write(addr, inst);
     addr += sizeof(u32);
@@ -45,8 +62,13 @@ inline bool trap_on() {
 }
 
 
-inline void trap(Machine& m, int trap_num) {
-  printf(RED("trap %d\n"), trap_num);
+inline void trap_comming(int trap_num) {
+  printf(RED("trap %d comming !\n"), trap_num);
+  trap_queue.push(trap_num);
+}
+
+
+inline void trap(Machine& m) {
 }
 
 #endif
