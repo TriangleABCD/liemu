@@ -9,6 +9,14 @@
 #define TRAP_MAX_NUM 4
 
 
+inline std::vector<std::vector<int>> trap_priority = {
+  {0, 1, 2, 3},
+  {1, 0, 2, 3},
+  {2, 1, 0, 3},
+  {3, 2, 1, 0}
+};
+
+
 inline void initTrap(Machine& m) {
   std::vector<u32> trampoline_code = {
 
