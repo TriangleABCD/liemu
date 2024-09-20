@@ -9,38 +9,11 @@
 
 #define TRAP_MAX_NUM 4
 
-
-/**
-* mtvec: trap base addr
-----------------
-| 31:2 | 1 | 0 |
-----------------
-
-* mepc: store the addr of the instruction that caused the trap
-
-* mcause: store the cause of the trap, a[31] = 1 when it's a interrupt
-----------------
-| 31 | 30:0    |
-----------------
-
-* mstatus: store the status of the machine
-a[3]: MIE, if 1, enable machine interrupt
-
-**/
-
-
-inline std::vector<std::vector<int>> trap_priority = {
-  {1, 1, 1, 1},
-  {0, 1, 1, 1},
-  {0, 0, 1, 1},
-  {0, 0, 0, 1}
-};
-
-inline auto cmp = [](const int& a, const int& b) {
+inline auto TrapCmp = [](const int& a, const int& b) {
   return (trap_priority[a][b] == 1);
 };
 
-inline std::priority_queue<int, std::vector<int>, decltype(cmp)> trap_queue(cmp);
+inline std::priority_queue<int, std::vector<int>, decltype(TrapCmp)> trap_queue(TrapCmp);
 
 inline void show_trap_queue() {
   printf("trap queue: ");
@@ -55,7 +28,7 @@ inline void show_trap_queue() {
 
 inline void initTrap(Machine& m) {
   std::vector<u32> trampoline_code = {
-
+    // todo
   };
 
   u32 addr = TRAMPOLINE_BTM;
@@ -63,21 +36,23 @@ inline void initTrap(Machine& m) {
     m.memory.write(addr, inst);
     addr += sizeof(u32);
   }
+
+  m.cpu.mtvec = TRAMPOLINE_BTM;
 }
 
 
-inline void trap_enable() {
-
+inline void trap_enable(Machine& m) {
+  m.cpu.mstatus = m.cpu.mstatus | 0x8;
 }
 
 
-inline void trap_disable() {
-
+inline void trap_disable(Machine& m) {
+  m.cpu.mstatus = m.cpu.mstatus & 0xfffffff7;
 }
 
 
-inline bool trap_on() {
-  return true;
+inline bool trap_on(Machine& m) {
+  return (m.cpu.mstatus & 0x8) == 1;
 }
 
 
@@ -88,6 +63,22 @@ inline void trap_comming(int trap_num) {
 
 
 inline void trap(Machine& m) {
+  if (!trap_on(m)) {
+    return;
+  }
+
+  if (trap_queue.empty()) {
+    return;
+  }
+
+  int cur = m.cpu.mcause & 0x7fffffff;
+
+  int nxt = trap_queue.top();
+
+  if (TrapCmp(nxt, cur)) {
+    // todo
+    trap_queue.pop();
+  }
 }
 
 #endif

@@ -104,4 +104,11 @@ inline std::vector<std::string> split(std::string str) {
   return words;
 }
 
+inline std::vector<std::vector<int>> trap_priority = {
+  {1, 1, 1, 1},
+  {0, 1, 1, 1},
+  {0, 0, 1, 1},
+  {0, 0, 0, 1}
+};
+
 #endif

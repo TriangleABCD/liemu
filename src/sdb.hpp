@@ -94,6 +94,7 @@ inline int execute_one_step(Machine& m) {
     fprintf(stderr, RED("exec error\n"));
     return r;
   }
+  trap(m);
   return r != 0;
 }
 

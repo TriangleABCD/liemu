@@ -13,6 +13,10 @@ struct CPU {
   u32 gp_regs[32];
   
   u32 pc;
+  u32 mtvec;
+  u32 mepc;
+  u32 mcause;
+  u32 mstatus;
 
   struct {
     u32 mstatus;
