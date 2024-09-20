@@ -10,6 +10,25 @@
 #define TRAP_MAX_NUM 4
 
 
+/**
+* mtvec: trap base addr
+----------------
+| 31:2 | 1 | 0 |
+----------------
+
+* mepc: store the addr of the instruction that caused the trap
+
+* mcause: store the cause of the trap, a[31] = 1 when it's a interrupt
+----------------
+| 31 | 30:0    |
+----------------
+
+* mstatus: store the status of the machine
+a[3]: MIE, if 1, enable machine interrupt
+
+**/
+
+
 inline std::vector<std::vector<int>> trap_priority = {
   {1, 1, 1, 1},
   {0, 1, 1, 1},
