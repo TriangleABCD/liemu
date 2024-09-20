@@ -76,7 +76,7 @@ inline void trap(Machine& m) {
   int nxt = trap_queue.top();
 
   if (TrapCmp(nxt, cur)) {
-    // todo
+    // todo  
     trap_queue.pop();
   }
 }
