@@ -76,9 +76,34 @@ inline void trap(Machine& m) {
   int nxt = trap_queue.top();
 
   if (TrapCmp(nxt, cur)) {
-    // todo  
+
+    m.cpu.gp_regs[2] -= 136;
+
+    m.writeMem(m.cpu.gp_regs[2], m.cpu.mepc);
+    m.writeMem(m.cpu.gp_regs[2] + 4, m.cpu.mcause);
+    for (int i = 0; i < 32; i++) {
+      u32 addr = m.cpu.gp_regs[2] + 8 + i * 4;
+      m.writeMem(addr, m.cpu.gp_regs[i]);
+    }
+    m.cpu.mepc = m.cpu.pc;
+
+    m.cpu.pc = m.cpu.mtvec;
+
     trap_queue.pop();
   }
+}
+
+
+inline void trap_ret(Machine& m) {
+  m.cpu.pc = m.cpu.mepc;
+  for (int i = 0; i < 32; i++) {
+    u32 addr = m.cpu.gp_regs[2] + 8 + i * 4;
+    m.cpu.gp_regs[i] = m.readMem(addr);
+  }
+  m.cpu.mcause = m.readMem(m.cpu.gp_regs[2] + 4);
+  m.cpu.mepc = m.readMem(m.cpu.gp_regs[2]);
+
+  m.cpu.gp_regs[2] += 136;
 }
 
 #endif

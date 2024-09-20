@@ -18,17 +18,6 @@ struct CPU {
   u32 mcause;
   u32 mstatus;
 
-  struct {
-    u32 mstatus;
-    u32 mip;
-    u32 mie;
-    u32 mcause;
-    u32 mtvec;
-    u32 mtval;
-    u32 mepc;
-    u32 mscratch;
-  } csr;
-
   std::vector<std::string> reg_names {
     "x0", "ra", "sp", "gp", "tp", "t0", "t1", "t2",
     "s0", "s1", "a0", "a1", "a2", "a3", "a4", "a5",
