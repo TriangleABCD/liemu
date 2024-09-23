@@ -21,6 +21,7 @@ struct Inst {
     u8 rd, rs1, rs2, shamt;
     i16 offset;
     i32 imm;
+    i16 csr;
   } preValue;
 };
 
@@ -791,6 +792,9 @@ inline Inst parseInst(u32 inst, Machine& m) {
       break;
     }
     case 0x73: {
+
+      
+
       int funct3 = (inst >> 12) & 0x7;
       switch(funct3) {
         case 0b000: {
@@ -822,7 +826,8 @@ inline Inst parseInst(u32 inst, Machine& m) {
           break;
         }
         case 0b001: {
-          res.name = "csrrw (skip)";
+          res.name = "csrrw ";
+          sprintf(buf, "%s, %s, %s", m.cpu.reg_names[rd].c_str(), "mstatus", m.cpu.reg_names[rs1].c_str());
           break;
         }
         case 0b010: {
