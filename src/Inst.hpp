@@ -7,6 +7,7 @@
 #include <functional>
 
 #include "Machine.hpp"
+#include "Trap.hpp"
 
 struct Inst {
   int result = -1;
@@ -793,6 +794,14 @@ inline Inst parseInst(u32 inst, Machine& m) {
       int funct3 = (inst >> 12) & 0x7;
       switch(funct3) {
         case 0b000: {
+          if (inst == 0x30200073) {
+            res.name = "mret";
+            res.doit = [](const Inst& inst, Machine& m) {
+              trap_ret(m);
+              return 0;
+            };
+            break;
+          }
           int op = (inst >> 20);
           if (op) {
             res.name = "ebreak (skip)";
