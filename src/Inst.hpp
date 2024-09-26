@@ -21,7 +21,7 @@ struct Inst {
     u8 rd, rs1, rs2, shamt;
     i16 offset;
     i32 imm;
-    i16 csr;
+    u16 csr;
   } preValue;
 };
 
@@ -793,7 +793,16 @@ inline Inst parseInst(u32 inst, Machine& m) {
     }
     case 0x73: {
 
-      
+      u8 rd = (inst >> 7) & 0x1f;
+      u8 rs1 = (inst >> 15) & 0x1f;
+      u16 csr = (inst >> 20) & 0xfff;
+
+      std::map<u16, std::string> csr_names = {
+        {0x300, "mstatus"},
+        {0x341, "mepc"},
+        {0x342, "mcause"},
+        {0x305, "mtvec"},
+      };
 
       int funct3 = (inst >> 12) & 0x7;
       switch(funct3) {
@@ -827,7 +836,22 @@ inline Inst parseInst(u32 inst, Machine& m) {
         }
         case 0b001: {
           res.name = "csrrw ";
-          sprintf(buf, "%s, %s, %s", m.cpu.reg_names[rd].c_str(), "mstatus", m.cpu.reg_names[rs1].c_str());
+          res.preValue.rd = rd;
+          res.preValue.rs1 = rs1;
+          res.preValue.csr = csr;
+
+          std::string csr_name = csr_names[csr];
+
+          sprintf(buf, "%s, %s, %s", m.cpu.reg_names[rd].c_str(), csr_name.c_str(), m.cpu.reg_names[rs1].c_str());
+          res.name += std::string(buf);
+
+          res.doit = [](const Inst& inst, Machine& m) {
+            u32 csr_val = m.cpu.read;
+            m.cpu.write_reg(inst.preValue.rd, csr_val);
+            m.cpu.write_csr(inst.preValue.csr, m.cpu.gp_regs[inst.preValue.rs1]);
+            return 0;
+          };
+
           break;
         }
         case 0b010: {
