@@ -99,6 +99,8 @@ inline void trap(Machine& m) {
 
     m.cpu.pc = m.cpu.mtvec;
 
+    m.cpu.mcause = nxt;
+
     trap_queue.pop();
   }
 }
