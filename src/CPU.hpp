@@ -13,10 +13,15 @@ struct CPU {
   u32 gp_regs[32];
   
   u32 pc;
-  u32 mtvec;
-  u32 mepc;
-  u32 mcause;
-  u32 mstatus;
+
+  u32 csr[4];
+  std::vector<std::string> csr_names {
+    "mtvec", "mepc", "mcause", "mstatus"
+  };
+  u32& mtvec = csr[0];
+  u32& mepc = csr[1];
+  u32& mcause = csr[2];
+  u32& mstatus = csr[3];
 
   std::vector<std::string> reg_names {
     "x0", "ra", "sp", "gp", "tp", "t0", "t1", "t2",
@@ -28,7 +33,11 @@ struct CPU {
   int reg2idx(std::string reg_name) {
     auto it = std::find(self.reg_names.begin(), self.reg_names.end(), reg_name);
     if (it == self.reg_names.end()) {
-      return -1;
+      auto it = std::find(self.csr_names.begin(), self.csr_names.end(), reg_name);
+      if (it == self.csr_names.end()) {
+        return -1;
+      }
+      return std::distance(self.csr_names.begin(), it);
     }
     return std::distance(self.reg_names.begin(), it);
   }
@@ -59,7 +68,12 @@ struct CPU {
     }
     self.pc = _start;
     self.gp_regs[self.reg2idx("sp")] = STACK_BTM;
-    self.gp_regs[self.reg2idx("ra")] = _end; 
+    self.gp_regs[self.reg2idx("ra")] = _end;
+
+    self.mtvec = 0;
+    self.mepc = 0;
+    self.mcause = 0;
+    self.mstatus = 0;
   }
 
   void info_reg(std::string reg = "") {
@@ -67,6 +81,18 @@ struct CPU {
       printf(GREEN("%s")":\t0x%08x\n", reg.c_str(), self.pc);
       return;
     }
+    for (auto& name: self.csr_names) {
+      if (name == reg) {
+        int idx = self.reg2idx(reg);
+        if (idx == -1) {
+          fprintf(stderr, RED("wrong reg name\n"));
+          return;
+        }
+        printf(GREEN("%s")":\t0x%08x\n", reg.c_str(), self.csr[idx]);
+        return;
+      }
+    }
+
     if ("" != reg) {
       int idx = self.reg2idx(reg);
       if (idx == -1) {
@@ -88,6 +114,15 @@ struct CPU {
       }
     }
     printf(GREEN("pc")":\t0x%08x\n", self.pc);
+
+    for (auto& name: self.csr_names) {
+      int idx = self.reg2idx(name);
+      if (idx == -1) {
+        fprintf(stderr, RED("wrong reg name\n"));
+        return;
+      }
+      printf(GREEN("%s")":\n0x%08x\n", name.c_str(), self.csr[idx]);
+    }
   }
 };
 
