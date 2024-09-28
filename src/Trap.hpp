@@ -26,21 +26,6 @@ inline void show_trap_queue() {
 }
 
 
-inline void initTrap(Machine& m) {
-  std::vector<u32> trampoline_code = {
-    // todo
-  };
-
-  u32 addr = TRAMPOLINE_BTM;
-  for (const auto& inst : trampoline_code) {
-    m.memory.write(addr, inst);
-    addr += sizeof(u32);
-  }
-
-  m.cpu.mtvec = TRAMPOLINE_BTM;
-}
-
-
 inline void trap_enable(Machine& m) {
   m.cpu.mstatus = m.cpu.mstatus | 0x8;
 }
@@ -53,6 +38,21 @@ inline void trap_disable(Machine& m) {
 
 inline bool trap_on(Machine& m) {
   return (m.cpu.mstatus & 0x8) == 1;
+}
+
+
+inline void initTrap(Machine& m) {
+  std::vector<u32> trampoline_code = {
+    // todo
+  };
+
+  u32 addr = TRAMPOLINE_BTM;
+  for (const auto& inst : trampoline_code) {
+    m.memory.write(addr, inst);
+    addr += sizeof(u32);
+  }
+  m.cpu.mtvec = TRAMPOLINE_BTM;
+  trap_enable(m);
 }
 
 
