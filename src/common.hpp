@@ -104,11 +104,14 @@ inline std::vector<std::string> split(std::string str) {
   return words;
 }
 
+#define TRAP_MAX_NUM 5
+
 inline std::vector<std::vector<int>> trap_priority = {
-  {1, 1, 1, 1},
-  {0, 1, 1, 1},
-  {0, 0, 1, 1},
-  {0, 0, 0, 1}
+  {0, 0, 0, 0, 0},
+  {1, 0, 1, 1, 1},
+  {1, 0, 0, 1, 1},
+  {1, 0, 0, 0, 1},
+  {1, 0, 0, 0, 0},
 };
 
 #endif

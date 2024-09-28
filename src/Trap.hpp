@@ -7,8 +7,6 @@
 
 #include "Machine.hpp"
 
-#define TRAP_MAX_NUM 4
-
 inline auto TrapCmp = [](const int& a, const int& b) {
   return (trap_priority[a][b] == 1);
 };
@@ -37,13 +35,25 @@ inline void trap_disable(Machine& m) {
 
 
 inline bool trap_on(Machine& m) {
-  return (m.cpu.mstatus & 0x8) == 1;
+  return (m.cpu.mstatus & 0x8);
 }
 
 
 inline void initTrap(Machine& m) {
   std::vector<u32> trampoline_code = {
-    // todo
+    0x00000513,
+    0x00100593,
+    0x00800293,
+    0xffe28293,
+    0x00b50633,
+    0x00058513,
+    0x00060593,
+    0xfff28293,
+    0xfe0298e3,
+    0x00b00533,
+    0x00100893,
+    0x00000073,
+    0x30200073
   };
 
   u32 addr = TRAMPOLINE_BTM;

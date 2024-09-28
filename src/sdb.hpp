@@ -59,15 +59,32 @@ inline void preParseInst(Machine& m) {
     getParsedInst[pc] = inst;
     pc += 4;
   }
+
+  pc = TRAMPOLINE_BTM;
+  while (1) {
+    u32 inst_value = m.memory.read(pc);
+    if (inst_value == MAGIC) {
+      break;
+    }
+
+    auto inst =  parseInst(inst_value, m);
+    if (inst.result == -1) {
+      fprintf(stderr, RED("parse inst failed\n"));
+      break;
+    }
+
+    getParsedInst[pc] = inst;
+    pc += 4;
+  }
 }
 
 
 inline void resetMachine(Machine& m, std::string path, u32 _start = CODE_START, u32 _end = CODE_END) {
-  m.memory.resetMemory();
-  load_insts_into_mem(path, m);
   m.cpu.resetCPU(_start, _end);
-  preParseInst(m);
+  m.memory.resetMemory();
   initTrap(m);
+  load_insts_into_mem(path, m);
+  preParseInst(m);
 }
 
 
@@ -80,8 +97,8 @@ inline int execute_one_step(Machine& m) {
     return -1;
   }
 
-  auto _ = m.readMem(m.cpu.pc);
-  Inst inst = getParsedInst[m.cpu.pc];
+  auto inst_val = m.readMem(m.cpu.pc);
+  Inst inst = parseInst(inst_val, m);
   
   if (inst.result == -1) {
     fprintf(stderr, RED("finish\n"));
@@ -89,13 +106,14 @@ inline int execute_one_step(Machine& m) {
   }
 
   int r = inst.doit(inst, m);
-  m.cpu.pc += 4;
-
   if (-1 == r) {
     fprintf(stderr, RED("exec error\n"));
     return r;
   }
+
   trap(m);
+  m.cpu.pc += 4;
+
   return r != 0;
 }
 
@@ -289,10 +307,15 @@ inline int cmd_ls(Machine& m, const std::vector<std::string>& cmd) {
   if (m.memory.read(pc) == MAGIC) {
     return 0;
   }
+
   u32 beg = pc - 5 * sizeof(u32);
-  if (beg < 0x80000000) {
-    beg = 0x80000000;
+  if (beg < CODE_END && beg < 0x80000000) {
+    beg = CODE_START;
   }
+  if (beg >= CODE_END && beg < TRAMPOLINE_BTM) {
+    beg = TRAMPOLINE_BTM;
+  }
+
   printf(GREEN("##############################################################\n"));
   for (int i = 0; ; i++) {
     u32 cur = beg + i * sizeof(u32);
@@ -303,7 +326,7 @@ inline int cmd_ls(Machine& m, const std::vector<std::string>& cmd) {
     if (inst == MAGIC) {
       break;
     }
-    int line = (cur - 0x80000000) / sizeof(u32);
+    int line = (cur - beg) / sizeof(u32);
     if (cur == pc) {
       printf("\033[32m>%d\t", line+1);
       printf("0x%08x\t", cur);
@@ -352,7 +375,7 @@ inline int cmd_trap(Machine& m, const std::vector<std::string>& cmd) {
   }
 
   int trap_num = atoi(cmd[1].c_str());
-  if (trap_num < 0 || trap_num >= TRAP_MAX_NUM) {
+  if (trap_num <= 0 || trap_num >= TRAP_MAX_NUM) {
     fprintf(stderr, RED("invalid trap num\n"));
     return CmdResult::CMD_ERR;
   }
