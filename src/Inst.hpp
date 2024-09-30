@@ -843,6 +843,7 @@ inline Inst parseInst(u32 inst, Machine& m) {
           res.preValue.rd = rd;
           res.preValue.rs1 = rs1;
           res.preValue.csr = csr;
+          res.preValue.csr_idx = csr_idx;
 
           std::string csr_name = m.cpu.csr_names[csr_idx];
 
@@ -859,23 +860,103 @@ inline Inst parseInst(u32 inst, Machine& m) {
           break;
         }
         case 0b010: {
-          res.name = "csrrs (skip)";
+          res.name = "csrrs ";
+          res.preValue.rd = rd;
+          res.preValue.rs1 = rs1;
+          res.preValue.csr = csr;
+          res.preValue.csr_idx = csr_idx;
+
+          std::string csr_name = m.cpu.csr_names[csr_idx];
+          sprintf(buf, "%s, %s, %s", m.cpu.reg_names[rd].c_str(), csr_name.c_str(), m.cpu.reg_names[rs1].c_str());
+          res.name += std::string(buf);
+
+          res.doit = [](const Inst& inst, Machine& m) {
+            u32 csr_val = m.cpu.csr[inst.preValue.csr_idx];
+            m.cpu.write_reg(inst.preValue.rd, csr_val);
+            m.cpu.csr[inst.preValue.csr_idx] = csr_val | m.cpu.gp_regs[inst.preValue.rs1];
+            return 0;
+          };
+
           break;
         }
         case 0b011: {
-          res.name = "csrrc (skip)";
+          res.name = "csrrc ";
+          res.preValue.rd = rd;
+          res.preValue.rs1 = rs1;
+          res.preValue.csr = csr;
+          res.preValue.csr_idx = csr_idx;
+
+          std::string csr_name = m.cpu.csr_names[csr_idx];
+          sprintf(buf, "%s, %s, %s", m.cpu.reg_names[rd].c_str(), csr_name.c_str(), m.cpu.reg_names[rs1].c_str());
+          res.name += std::string(buf);
+
+          res.doit = [](const Inst& inst, Machine& m) {
+            u32 csr_val = m.cpu.csr[inst.preValue.csr_idx];
+            m.cpu.write_reg(inst.preValue.rd, csr_val);
+            m.cpu.csr[inst.preValue.csr_idx] = csr_val & ~(m.cpu.gp_regs[inst.preValue.rs1]);
+            return 0;
+          };
+
           break;
         }
         case 0b101: {
-          res.name = "csrrwi (skip)";
+          res.name = "csrrwi ";
+          res.preValue.rd = rd;
+          res.preValue.rs1 = rs1;
+          res.preValue.csr = csr;
+          res.preValue.csr_idx = csr_idx;
+
+          std::string csr_name = m.cpu.csr_names[csr_idx];
+          sprintf(buf, "%s, %s, 0b%05b", m.cpu.reg_names[rd].c_str(), csr_name.c_str(), rs1);
+          res.name += std::string(buf);
+
+          res.doit = [](const Inst& inst, Machine& m) {
+            u32 csr_val = m.cpu.csr[inst.preValue.csr_idx];
+            m.cpu.write_reg(inst.preValue.rd, csr_val);
+            m.cpu.csr[inst.preValue.csr_idx] = (u32)inst.preValue.rs1;
+            return 0;
+          };
+
           break;
         }
         case 0b110: {
-          res.name = "csrrsi (skip)";
+          res.name = "csrrsi ";
+          res.preValue.rd = rd;
+          res.preValue.rs1 = rs1;
+          res.preValue.csr = csr;
+          res.preValue.csr_idx = csr_idx;
+
+          std::string csr_name = m.cpu.csr_names[csr_idx];
+          sprintf(buf, "%s, %s, 0b%05b", m.cpu.reg_names[rd].c_str(), csr_name.c_str(), rs1);
+          res.name += std::string(buf);
+
+          res.doit = [](const Inst& inst, Machine& m) {
+            u32 csr_val = m.cpu.csr[inst.preValue.csr_idx];
+            m.cpu.write_reg(inst.preValue.rd, csr_val);
+            m.cpu.csr[inst.preValue.csr_idx] = csr_val | (u32)inst.preValue.rs1;
+            return 0;
+          };
+
           break;
         }
         case 0b111: {
-          res.name = "csrrci (skip)";
+          res.name = "csrrci ";
+          res.preValue.rd = rd;
+          res.preValue.rs1 = rs1;
+          res.preValue.csr = csr;
+          res.preValue.csr_idx = csr_idx;
+
+          std::string csr_name = m.cpu.csr_names[csr_idx];
+          sprintf(buf, "%s, %s, 0b%05b", m.cpu.reg_names[rd].c_str(), csr_name.c_str(), rs1);
+          res.name += std::string(buf);
+
+          res.doit = [](const Inst& inst, Machine& m) {
+            u32 csr_val = m.cpu.csr[inst.preValue.csr_idx];
+            m.cpu.write_reg(inst.preValue.rd, csr_val);
+            m.cpu.csr[inst.preValue.csr_idx] = csr_val & ~((u32)inst.preValue.rs1);
+            return 0;
+          };
+
           break;
         }
       }

@@ -308,11 +308,17 @@ inline int cmd_ls(Machine& m, const std::vector<std::string>& cmd) {
     return 0;
   }
 
-  u32 beg = pc - 5 * sizeof(u32);
-  if (beg < CODE_END && beg < 0x80000000) {
-    beg = CODE_START;
+  u32 code_start = 0;
+  if (CODE_START <= pc && pc < CODE_END) {
+    code_start = CODE_START;
+  } else if (pc >= TRAMPOLINE_BTM) {
+    code_start = TRAMPOLINE_BTM;
   }
-  if (beg >= CODE_END && beg < TRAMPOLINE_BTM) {
+
+  u32 beg = pc - 5 * sizeof(u32);
+  if (beg < CODE_START) {
+    beg = CODE_START;
+  } else if (CODE_END <= beg && beg < TRAMPOLINE_BTM) {
     beg = TRAMPOLINE_BTM;
   }
 
@@ -326,7 +332,7 @@ inline int cmd_ls(Machine& m, const std::vector<std::string>& cmd) {
     if (inst == MAGIC) {
       break;
     }
-    int line = (cur - beg) / sizeof(u32);
+    int line = (cur - code_start) / sizeof(u32);
     if (cur == pc) {
       printf("\033[32m>%d\t", line+1);
       printf("0x%08x\t", cur);
