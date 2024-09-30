@@ -8,7 +8,7 @@
 #include "Machine.hpp"
 
 inline auto TrapCmp = [](const int& a, const int& b) {
-  return (trap_priority[a][b] == 1);
+  return !(trap_priority[a][b] == 1);
 };
 
 inline std::priority_queue<int, std::vector<int>, decltype(TrapCmp)> trap_queue(TrapCmp);
@@ -85,7 +85,7 @@ inline void trap(Machine& m) {
 
   int nxt = trap_queue.top();
 
-  if (TrapCmp(nxt, cur)) {
+  if (!TrapCmp(nxt, cur)) {
 
     m.cpu.gp_regs[2] -= 136;
 
@@ -97,7 +97,7 @@ inline void trap(Machine& m) {
     }
     m.cpu.mepc = m.cpu.pc;
 
-    m.cpu.pc = m.cpu.mtvec;
+    m.cpu.pc = m.cpu.mtvec - 4;
 
     m.cpu.mcause = nxt;
 
