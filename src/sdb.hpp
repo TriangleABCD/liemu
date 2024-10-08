@@ -159,7 +159,7 @@ int cmd_w(Machine& m, const std::vector<std::string>& cmd);
 int cmd_d(Machine& m, const std::vector<std::string>& cmd);
 int cmd_hit(Machine& m, const std::vector<std::string>& cmd);
 int cmd_trap(Machine& m, const std::vector<std::string>& cmd);
-int cmd_trap_queue(Machine& m, const std::vector<std::string>& cmd);
+int cmd_queue(Machine& m, const std::vector<std::string>& cmd);
 
 
 inline std::vector<Command> cmds {
@@ -176,7 +176,7 @@ inline std::vector<Command> cmds {
   { "d", "d watchpoint delete a watch point", cmd_d },
   { "hit", "show cache hit rate", cmd_hit },
   { "trap", "trap [trap_num], trigger a trap", cmd_trap },
-  { "trap_queue", "show trap queue", cmd_trap_queue },
+  { "queue", "show trap queue", cmd_queue },
 };
 
 
@@ -392,7 +392,7 @@ inline int cmd_trap(Machine& m, const std::vector<std::string>& cmd) {
 }
 
 
-inline int cmd_trap_queue(Machine& m, const std::vector<std::string>& cmd) {
+inline int cmd_queue(Machine& m, const std::vector<std::string>& cmd) {
   show_trap_queue();
   return CmdResult::CMD_OK;
 }
