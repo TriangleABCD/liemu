@@ -1026,21 +1026,15 @@ inline Inst parseInst(u32 inst, Machine& m) {
 
 
 inline u32 do_mul(u32 a, u32 b) {
-  // LAB 1 todo
-  assert(0);
-  return {};
+  return (i32)a * (i32)b;
 }
 
 inline u32 do_div(u32 a, u32 b) {
-  // LAB 1 todo
-  assert(0);
-  return {};
+  return (i32)a / (i32)b;
 }
 
 inline u32 do_rem(u32 a, u32 b) {
-  // LAB 1 todo
-  assert(0);
-  return {};
+  return (i32)a % (i32)b;
 }
 
 #endif

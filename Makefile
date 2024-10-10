@@ -8,7 +8,7 @@ READLINE_LIB=-L/usr/lib -lreadline
 
 NAME=liemu
 
-INST_NAME=fib
+INST_NAME=lab1
 
 INSTS=insts/$(INST_NAME).inst
 
