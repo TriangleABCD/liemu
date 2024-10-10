@@ -475,8 +475,8 @@ inline Inst parseInst(u32 inst, Machine& m) {
       int funct3 = (inst >> 12) & 0x7;
       switch(funct3) {
         case 0b000: {
-          int op = (inst >> 31);
-          if (op) {
+          int funct7 = (inst >> 25);
+          if (funct7 == 0b0100000) {
             res.name = "sub ";
             res.name += m.cpu.reg_names[rd];
             res.name += ", " + m.cpu.reg_names[rs1] + ", " + m.cpu.reg_names[rs2];
@@ -485,13 +485,23 @@ inline Inst parseInst(u32 inst, Machine& m) {
               m.cpu.write_reg(inst.preValue.rd, m.cpu.gp_regs[inst.preValue.rs1] - m.cpu.gp_regs[inst.preValue.rs2]);
               return 0;
             };
-          } else {
+          } else if (funct7 == 0b0000000) {
             res.name = "add ";
             res.name += m.cpu.reg_names[rd];
             res.name += ", " + m.cpu.reg_names[rs1] + ", " + m.cpu.reg_names[rs2];
 
             res.doit = [](const Inst& inst, Machine& m) {
               m.cpu.write_reg(inst.preValue.rd, m.cpu.gp_regs[inst.preValue.rs1] + m.cpu.gp_regs[inst.preValue.rs2]);
+              return 0;
+            };
+          } else {
+            res.name = "mul ";
+            res.name += m.cpu.reg_names[rd];
+            res.name += ", " + m.cpu.reg_names[rs1] + ", " + m.cpu.reg_names[rs2];
+
+            res.doit = [](const Inst& inst, Machine& m) {
+              // LAB 1 todo
+              assert(0);
               return 0;
             };
           }
@@ -543,14 +553,30 @@ inline Inst parseInst(u32 inst, Machine& m) {
           break;
         }
         case 0b100: {
-          res.name = "xor ";
-          res.name += m.cpu.reg_names[rd];
-          res.name += ", " + m.cpu.reg_names[rs1] + ", " + m.cpu.reg_names[rs2];
 
-          res.doit = [](const Inst& inst, Machine& m) {
-            m.cpu.write_reg(inst.preValue.rd, m.cpu.gp_regs[inst.preValue.rs1] ^ m.cpu.gp_regs[inst.preValue.rs2]);
-            return 0;
-          };
+          int funct7 = (inst >> 25);
+
+          if (funct7 == 0) {
+            res.name = "xor ";
+            res.name += m.cpu.reg_names[rd];
+            res.name += ", " + m.cpu.reg_names[rs1] + ", " + m.cpu.reg_names[rs2];
+
+            res.doit = [](const Inst& inst, Machine& m) {
+              m.cpu.write_reg(inst.preValue.rd, m.cpu.gp_regs[inst.preValue.rs1] ^ m.cpu.gp_regs[inst.preValue.rs2]);
+              return 0;
+            };
+          } else if (funct7 == 0b0000001) {
+            res.name = "div ";
+            res.name += m.cpu.reg_names[rd];
+            res.name += ", " + m.cpu.reg_names[rs1] + ", " + m.cpu.reg_names[rs2];
+
+            res.doit = [](const Inst& inst, Machine& m) {
+              // LAB 1 todo
+              assert(0);
+              return 0;
+            };
+          }
+
           break;
         }
         case 0b101: {
@@ -577,14 +603,30 @@ inline Inst parseInst(u32 inst, Machine& m) {
           break;
         }
         case 0b110: {
-          res.name = "or ";
-          res.name += m.cpu.reg_names[rd];
-          res.name += ", " + m.cpu.reg_names[rs1] + ", " + m.cpu.reg_names[rs2];
 
-          res.doit = [](const Inst& inst, Machine& m) {
-            m.cpu.write_reg(inst.preValue.rd, m.cpu.gp_regs[inst.preValue.rs1] | m.cpu.gp_regs[inst.preValue.rs2]);
-            return 0;
-          };
+          int funct7 = (inst >> 25);
+
+          if (funct7 == 0) {
+            res.name = "or ";
+            res.name += m.cpu.reg_names[rd];
+            res.name += ", " + m.cpu.reg_names[rs1] + ", " + m.cpu.reg_names[rs2];
+
+            res.doit = [](const Inst& inst, Machine& m) {
+              m.cpu.write_reg(inst.preValue.rd, m.cpu.gp_regs[inst.preValue.rs1] | m.cpu.gp_regs[inst.preValue.rs2]);
+              return 0;
+            };
+          } else if (funct7 == 0b0000001) {
+            res.name = "rem ";
+            res.name += m.cpu.reg_names[rd];
+            res.name += ", " + m.cpu.reg_names[rs1] + ", " + m.cpu.reg_names[rs2];
+
+            res.doit = [](const Inst& inst, Machine& m) {
+              // LAB 1 todo
+              assert(0);
+              return 0;
+            };
+          }
+
           break;
         }
         case 0b111: {
