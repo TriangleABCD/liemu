@@ -64,6 +64,12 @@ inline std::vector<Syscall> syscalls {
   } },
 };
 
+
+u32 do_mul(u32 a, u32 b);
+u32 do_div(u32 a, u32 b);
+u32 do_rem(u32 a, u32 b);
+
+
 inline Inst parseInst(u32 inst, Machine& m) {
   Inst res;
   res.result = 0;
@@ -500,8 +506,10 @@ inline Inst parseInst(u32 inst, Machine& m) {
             res.name += ", " + m.cpu.reg_names[rs1] + ", " + m.cpu.reg_names[rs2];
 
             res.doit = [](const Inst& inst, Machine& m) {
-              // LAB 1 todo
-              assert(0);
+              u32 a = m.cpu.gp_regs[inst.preValue.rs1];
+              u32 b = m.cpu.gp_regs[inst.preValue.rs2];
+              u32 c = do_mul(a, b);
+              m.cpu.write_reg(inst.preValue.rd,  c);
               return 0;
             };
           }
@@ -571,8 +579,10 @@ inline Inst parseInst(u32 inst, Machine& m) {
             res.name += ", " + m.cpu.reg_names[rs1] + ", " + m.cpu.reg_names[rs2];
 
             res.doit = [](const Inst& inst, Machine& m) {
-              // LAB 1 todo
-              assert(0);
+              u32 a = m.cpu.gp_regs[inst.preValue.rs1];
+              u32 b = m.cpu.gp_regs[inst.preValue.rs2];
+              u32 c = do_div(a, b);
+              m.cpu.write_reg(inst.preValue.rd,  c);
               return 0;
             };
           }
@@ -621,8 +631,10 @@ inline Inst parseInst(u32 inst, Machine& m) {
             res.name += ", " + m.cpu.reg_names[rs1] + ", " + m.cpu.reg_names[rs2];
 
             res.doit = [](const Inst& inst, Machine& m) {
-              // LAB 1 todo
-              assert(0);
+              u32 a = m.cpu.gp_regs[inst.preValue.rs1];
+              u32 b = m.cpu.gp_regs[inst.preValue.rs2];
+              u32 c = do_rem(a, b);
+              m.cpu.write_reg(inst.preValue.rd,  c);
               return 0;
             };
           }
@@ -1010,6 +1022,25 @@ inline Inst parseInst(u32 inst, Machine& m) {
   }
 
   return res;
+}
+
+
+inline u32 do_mul(u32 a, u32 b) {
+  // LAB 1 todo
+  assert(0);
+  return {};
+}
+
+inline u32 do_div(u32 a, u32 b) {
+  // LAB 1 todo
+  assert(0);
+  return {};
+}
+
+inline u32 do_rem(u32 a, u32 b) {
+  // LAB 1 todo
+  assert(0);
+  return {};
 }
 
 #endif
