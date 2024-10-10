@@ -1,43 +1,50 @@
 .globl _start
 
 _start:
-  li a1, 1
-  beq a0, a1, TRAP_1
-  li a1, 2
-  beq a0, a1, TRAP_2
-  li a1, 3
-  beq a0, a1, TRAP_3
-  li a1, 4
-  beq a0, a1, TRAP_4
-
-TRAP_1:
+  li t0, 28
+  li t1, 13
+  mul a0, t0, t1
   li a7, 1
   ecall
-  add x0, x0, x0
-  ecall
-  j RET
-
-TRAP_2:
+  div a0, t0, t1
   li a7, 1
   ecall
-  addi t0, t0, 1
-  addi t0, t0, -1
-  ecall
-  j RET
-
-TRAP_3:
+  rem a0, t0, t1
   li a7, 1
   ecall
-  xori t1, t1, 0
-  ecall
-  j RET
 
-TRAP_4:
+  li t0, 1145
+  li t1, -14
+  mul a0, t0, t1
   li a7, 1
   ecall
-  andi t2, t2, 1
+  div a0, t0, t1
+  li a7, 1
   ecall
-  j RET
+  rem a0, t0, t1
+  li a7, 1
+  ecall
 
-RET:
-  mret
+  li t0, -5730
+  li t1, 233
+  mul a0, t0, t1
+  li a7, 1
+  ecall
+  div a0, t0, t1
+  li a7, 1
+  ecall
+  rem a0, t0, t1
+  li a7, 1
+  ecall
+
+  li t0, -1919
+  li t1, -810
+  mul a0, t0, t1
+  li a7, 1
+  ecall
+  div a0, t0, t1
+  li a7, 1
+  ecall
+  rem a0, t0, t1
+  li a7, 1
+  ecall
