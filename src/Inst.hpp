@@ -961,7 +961,7 @@ inline Inst parseInst(u32 inst, Machine& m) {
           res.preValue.csr_idx = csr_idx;
 
           std::string csr_name = m.cpu.csr_names[csr_idx];
-          sprintf(buf, "%s, %s, 0b%05b", m.cpu.reg_names[rd].c_str(), csr_name.c_str(), rs1);
+          sprintf(buf, "%s, %s, 0x%02x", m.cpu.reg_names[rd].c_str(), csr_name.c_str(), rs1);
           res.name += std::string(buf);
 
           res.doit = [](const Inst& inst, Machine& m) {
@@ -981,7 +981,7 @@ inline Inst parseInst(u32 inst, Machine& m) {
           res.preValue.csr_idx = csr_idx;
 
           std::string csr_name = m.cpu.csr_names[csr_idx];
-          sprintf(buf, "%s, %s, 0b%05b", m.cpu.reg_names[rd].c_str(), csr_name.c_str(), rs1);
+          sprintf(buf, "%s, %s, 0x%02x", m.cpu.reg_names[rd].c_str(), csr_name.c_str(), rs1);
           res.name += std::string(buf);
 
           res.doit = [](const Inst& inst, Machine& m) {
@@ -1001,7 +1001,7 @@ inline Inst parseInst(u32 inst, Machine& m) {
           res.preValue.csr_idx = csr_idx;
 
           std::string csr_name = m.cpu.csr_names[csr_idx];
-          sprintf(buf, "%s, %s, 0b%05b", m.cpu.reg_names[rd].c_str(), csr_name.c_str(), rs1);
+          sprintf(buf, "%s, %s, 0x%02x", m.cpu.reg_names[rd].c_str(), csr_name.c_str(), rs1);
           res.name += std::string(buf);
 
           res.doit = [](const Inst& inst, Machine& m) {
