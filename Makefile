@@ -13,26 +13,26 @@ INST_NAME=fib
 INSTS=insts/$(INST_NAME).inst
 
 $(NAME): $(OBJS)
-	@$(CXX) $(CXXFLAGS) -lm -o $@ $^ $(READLINE_LIB) $(LDFLAGS)
+	$(CXX) $(CXXFLAGS) -lm -o $@ $^ $(READLINE_LIB) $(LDFLAGS)
 
 $(OBJS): obj/%.o: src/%.cpp $(HDRS)
-	@mkdir -p $$(dirname $@)
-	@$(CXX) $(CXXFLAGS) -c -o $@ $<
+	mkdir -p $$(dirname $@)
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 run: $(NAME) $(INSTS)
-	@./$(NAME) $(INSTS)
+	./$(NAME) $(INSTS)
 
 gdb: $(NAME) $(INSTS)
-	@gdb --args ./$(NAME) $(INSTS)
+	gdb --args ./$(NAME) $(INSTS)
 
 clean:
-	@rm -rf $(NAME) obj/
+	rm -rf $(NAME) obj/
 
 LOG ?= "."
 
 gitpush:
-	@git add -A
-	@git commit -m "$(LOG)"
-	@git push
+	git add -A
+	git commit -m "$(LOG)"
+	git push
 
 .PHONY: clean run gitpush gdb
