@@ -5,10 +5,9 @@
 #include <assert.h>
 
 #include "common.hpp"
+#include "Device.hpp"
 
-struct AbstractMemory {
-  virtual u32 read(u32 addr) = 0;
-  virtual void write(u32 addr, u32 data) = 0;
+struct AbstractMemory : public Device {
 };
 
 struct Memory : public AbstractMemory {

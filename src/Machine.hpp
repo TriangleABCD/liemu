@@ -6,11 +6,13 @@
 #include "CPU.hpp"
 #include "Memory.hpp"
 #include "Cache.hpp"
+#include "Bus.hpp"
 
 struct Machine {
   CPU cpu;
   Memory memory;
   Cache cache;
+  Bus bus;
 
   Machine() {
     self.cache.setLevel(&self.memory);
