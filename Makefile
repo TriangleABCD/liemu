@@ -8,9 +8,9 @@ READLINE_LIB=-L/usr/lib -lreadline
 
 NAME=liemu
 
-INST_NAME=fib
+INST_NAME=fib5
 
-INSTS=insts/$(INST_NAME).inst
+INSTS=emu_bin/$(INST_NAME).bin
 
 $(NAME): $(OBJS)
 	$(CXX) $(CXXFLAGS) -lm -o $@ $^ $(READLINE_LIB) $(LDFLAGS)
